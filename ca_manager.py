@@ -4,14 +4,16 @@ import hashlib
 import json
 import os
 import os.path
+import shutil
 import sqlite3
 import subprocess
 import tempfile
 
 
-MANAGER_PATH = "." # FIXME
-REQUESTS_PATH = "reqs"
-OUTPUT_PATH = "outs"
+MANAGER_PATH = "/var/lib/ca_manager/private"
+REQUESTS_PATH = "/var/lib/ca_manager/requests"
+OUTPUT_PATH = "/var/lib/ca_manager/outputs"
+RESULTS_PATH = "/var/lib/ca_manager/results"
 
 
 class SignRequest(object):
@@ -290,6 +292,8 @@ def list_cas(ca_manager):
 
 
 def sign_request(ca_manager):
+    global RESULTS_PATH
+
     list_cas(ca_manager)
     ca_selection = input('Select a CA> ')
 
@@ -324,8 +328,10 @@ def sign_request(ca_manager):
     if confirm != 'yes':
         return
 
-    authority.sign(request)
+    cert_path = authority.sign(request)
     ca_manager.drop_request(request)
+
+    shutil.copy(cert_path, os.path.join(RESULTS_PATH, request.req_id))
 
 
 if __name__ == '__main__':
