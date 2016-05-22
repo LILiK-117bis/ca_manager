@@ -305,7 +305,7 @@ def sign_request(ca_manager):
 
     requests = ca_manager.get_requests()
     for i, request in enumerate(requests):
-        print("%2d) %s" % (i, request.get_name()))
+        print("%2d) %s - %s" % (i, request.req_id, request.get_name()))
     req_selection = input('Select a request> ')
 
     try:
