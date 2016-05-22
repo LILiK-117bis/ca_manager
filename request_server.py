@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import json
 import os.path
 import sys
 import time
@@ -17,8 +18,10 @@ def exit_good(response):
 
 
 def exit_bad(reason):
-    response['status'] = 'error'
-    response['reason'] = reason
+    response = {
+        'status': 'error',
+        'reason': reason
+    }
     print(json.dumps(response))
     sys.exit(0)
 
@@ -55,7 +58,7 @@ def main():
         with open(result_path, 'r') as stream:
             result_data = stream.read()
 
-        exit_good({ 'requestID': request_id, 'requestData': request_data })
+        exit_good({ 'requestID': request_id, 'result': result_data })
     else:
         exit_bad('unknown_type')
 

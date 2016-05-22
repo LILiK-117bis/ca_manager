@@ -14,7 +14,9 @@ def main(args):
 
     result_dict['keyData'] = key_data
 
-    print(json.dumps(result_dict))
+    request = { 'type': 'sign_request', 'request': result_dict }
+
+    print(json.dumps(request))
 
 
 def get_parser():
