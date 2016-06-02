@@ -215,6 +215,13 @@ class CAManager(object):
                 req_objs.append(
                         UserSSHRequest(
                             request_name, user_name, root_requested, key_data))
+            elif req['keyType'] == 'ssh_host':
+                host_name = req['hostName']
+                key_data = req['keyData']
+
+                req_objs.append(
+                        HostSSHRequest(
+                            request_name, host_name, key_data))
 
         return req_objs
 

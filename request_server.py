@@ -32,8 +32,12 @@ def main():
 
     response = {}
 
-    try:
+    if (len(sys.argv) > 2):
+        request_data = sys.argv[2]
+    else:
         request_data = sys.stdin.read(10000)
+
+    try:
         metarequest = json.loads(request_data)
         assert 'type' in metarequest
     except:
