@@ -2,15 +2,18 @@
 
 import argparse
 import json
-
+from os import path
 
 def main(args):
     result_dict = {}
     result_dict['keyType'] = 'ssh_host'
     result_dict['hostName'] = args.host_name
 
-    with open(args.pub_key_path, 'r') as stream:
-        key_data = stream.read().strip()
+    if path.exists(args.pub_key_path):
+        with open(args.pub_key_path, 'r') as stream:
+            key_data = stream.read().strip()
+    else:
+        key_data = args.pub_key_path
 
     result_dict['keyData'] = key_data
 
