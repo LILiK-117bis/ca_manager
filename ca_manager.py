@@ -44,6 +44,20 @@ class UserSSHRequest(SignRequest):
             ("Root access requested", 'yes' if self.root_requested else 'no')
         ]
 
+class HostSSLRequest(SignRequest):
+    def __init__(self, req_id, host_name, key_data):
+        super().__init__(req_id)
+
+        self.host_name = host_name
+        self.key_data = key_data
+
+    def get_name(self):
+        return "Hostname: %s" % self.host_name
+
+    def get_fields(self):
+        return [
+            ("Hostname", self.host_name)
+        ]
 
 class HostSSHRequest(SignRequest):
     def __init__(self, req_id, host_name, key_data):
@@ -139,6 +153,72 @@ class SSHAuthority(Authority):
 
         return cert_path
 
+class SSLAuthority(Authority):
+    ca_type = 'ssl'
+
+    ca_key_algorithm = 'des3'
+    key_length = '4096'
+
+    key_algorithm = 'sha256'
+    ca_validity = '365'
+    cert_validity = '365'
+
+    def generate(self):
+        if os.path.exists(self.path):
+            raise ValueError("A CA with the same id and type already exists")
+
+        subprocess.call(['openssl',
+            'genrsa',
+            '-%s'%self.ca_key_algorithm,
+            '-out', '%s'%(self.path),
+            self.key_length])
+
+        subprocess.call(['openssl',
+            'req',
+            '-new',
+            '-x509',
+            '-days', self.ca_validity,
+            '-key', self.path,
+            # '-extensions', 'v3_ca'
+            '-out', "%s.pub"%self.path,
+            # '-config', "%s.conf"%self.path
+            ])
+
+        with open(self.path + '.serial', 'w') as stream:
+            stream.write(str(0))
+
+
+    def sign(self, request):
+        global OUTPUT_PATH
+
+        assert type(request) in [HostSSLRequest]
+
+        pub_key_path = os.path.join(OUTPUT_PATH, request.req_id + '.pub')
+        cert_path = os.path.join(OUTPUT_PATH, request.req_id + '-cert.pub')
+
+        with open(self.path + '.serial', 'r') as stream:
+            next_serial = int(stream.read())
+        with open(self.path + '.serial', 'w') as stream:
+            stream.write(str(next_serial + 1))
+
+        with open(pub_key_path, 'w') as stream:
+            stream.write(request.key_data)
+
+        ca_private_key = self.path
+
+        # openssl x509 -req -days 360 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt        # print()
+        subprocess.check_output(['openssl',
+                        'x509',
+                        '-req',
+                        '-days', self.ca_validity,
+                        '-in', pub_key_path,
+                        '-CA', "%s.pub"%self.path,
+                        '-CAkey', self.path,
+                        '-CAcreateserial',
+                        '-out', cert_path,
+                        '-%s'%self.key_algorithm])
+
+        return cert_path
 
 class CAManager(object):
     def __init__(self, path):
@@ -166,6 +246,13 @@ class CAManager(object):
         cas_dir = self._get_ssh_cas_dir()
         return os.path.join(cas_dir, ca_id)
 
+    def _get_ssl_cas_dir(self):
+        return os.path.join(self.path, 'ssl_cas')
+
+    def _get_ssl_ca_path(self, ca_id):
+        cas_dir = self._get_ssl_cas_dir()
+        return os.path.join(cas_dir, ca_id)
+
     def create_ssh_ca(self, ca_id, ca_name):
         ca_path = self._get_ssh_ca_path(ca_id)
 
@@ -178,6 +265,17 @@ class CAManager(object):
                 (ca_id, ca_name))
         self.conn.commit()
 
+    def create_ssl_ca(self, ca_id, ca_name):
+        ca_path = self._get_ssl_ca_path(ca_id)
+
+        authority = SSLAuthority(ca_id, ca_name, ca_path)
+
+        authority.generate()
+
+        c = self.conn.cursor()
+        c.execute("""INSERT INTO cas VALUES (?, ?, 'ssl')""",
+                (ca_id, ca_name))
+        self.conn.commit()
 
     def get_cas_list(self):
         c = self.conn.cursor()
@@ -191,10 +289,13 @@ class CAManager(object):
         c.execute("""SELECT name, type FROM cas WHERE id = ?""", (ca_id, ))
 
         ca_name, ca_type = c.fetchone()
-        ca_path = self._get_ssh_ca_path(ca_id)
 
         if ca_type == 'ssh':
+            ca_path = self._get_ssh_ca_path(ca_id)
             return SSHAuthority(ca_id, ca_name, ca_path)
+        elif ca_type == 'ssl':
+            ca_path = self._get_ssl_ca_path(ca_id)
+            return SSLAuthority(ca_id, ca_name, ca_path)
 
     def get_requests(self):
         global REQUESTS_PATH
@@ -222,6 +323,13 @@ class CAManager(object):
                 req_objs.append(
                         HostSSHRequest(
                             request_name, host_name, key_data))
+            elif req['keyType'] == 'ssl_host':
+                host_name = req['hostName']
+                key_data = req['keyData']
+
+                req_objs.append(
+                        HostSSLRequest(
+                            request_name, host_name, key_data))
 
         return req_objs
 
@@ -231,13 +339,17 @@ class CAManager(object):
         os.unlink(os.path.join(REQUESTS_PATH, request.req_id))
 
 
-def init_manager(path):
-    db_path = os.path.join(path, 'ca_manager.db')
+def init_manager(paths):
+    db_path = os.path.join(paths[0], 'ca_manager.db')
 
-    directories = ['ssh_cas']
+    directories = ['ssh_cas', 'ssl_cas']
+
+    for dirpath in paths:
+        if not os.path.exists(dirpath):
+            os.mkdir(dirpath)
 
     for dirname in directories:
-        dirpath = os.path.join(path, dirname)
+        dirpath = os.path.join(paths[0], dirname)
 
         if not os.path.exists(dirpath):
             os.mkdir(dirpath)
@@ -253,12 +365,13 @@ def init_manager(path):
 def main():
     global MANAGER_PATH
 
-    init_manager(MANAGER_PATH)
+    init_manager([MANAGER_PATH, REQUESTS_PATH, OUTPUT_PATH, RESULTS_PATH])
 
     menu_entries = [
         ("list-cas", "List available CAs"),
         ("show-ca", "Show CA info"),
         ("gen-ssh-ca", "Generate SSH CA"),
+        ("gen-ssl-ca", "Generate SSL CA"),
         ("sign-request", "Sign request"),
         ("help", "Show this message"),
         ("quit", "Quit from CA manager")
@@ -286,6 +399,10 @@ def main():
                 ca_id = input("CA unique id> ")
                 ca_name = input("CA human-readable name> ")
                 ca_manager.create_ssh_ca(ca_id, ca_name)
+            elif selection == 'gen-ssl-ca':
+                ca_id = input("CA unique id> ")
+                ca_name = input("CA human-readable name> ")
+                ca_manager.create_ssl_ca(ca_id, ca_name)
             elif selection == 'sign-request':
                 sign_request(ca_manager)
             else:
