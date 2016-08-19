@@ -20,6 +20,10 @@ class CAManagerShell(cmd.Cmd, object):
         'List the available certification authorities: LS'
         list_cas(self.ca_manager)
 
+    def do_requests(self, l):
+        'List the available certification requests: REQUESTS'
+        print_available_requests(self.ca_manager)
+
     def do_show_ca(self, l):
         'Show certification authority information: SHOW_CA'
         raise NotImplementedError()
