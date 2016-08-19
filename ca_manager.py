@@ -12,11 +12,6 @@ import subprocess
 import tempfile
 
 
-MANAGER_PATH = "/var/lib/ca_manager/private"
-REQUESTS_PATH = "/var/lib/ca_manager/requests"
-OUTPUT_PATH = "/var/lib/ca_manager/outputs"
-RESULTS_PATH = "/var/lib/ca_manager/results"
-
 
 class SignRequest(object):
     def __init__(self, req_id):
@@ -221,6 +216,7 @@ class SSLAuthority(Authority):
                         '-%s'%self.key_algorithm])
 
         return cert_path
+from paths import *
 
 
 
@@ -326,7 +322,6 @@ class CAManager(object):
             return SSLAuthority(ca_id, ca_name, ca_path)
 
     def get_requests(self):
-        global REQUESTS_PATH
 
         req_objs = []
 
@@ -362,7 +357,6 @@ class CAManager(object):
         return req_objs
 
     def drop_request(self, request):
-        global REQUESTS_PATH
 
         os.unlink(os.path.join(REQUESTS_PATH, request.req_id))
 
