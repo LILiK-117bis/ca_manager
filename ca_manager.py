@@ -208,22 +208,15 @@ def sign_request(ca_manager, choosen_request, choosen_ca):
         return
 
     requests = ca_manager.get_requests()
-    for i, request in enumerate(requests):
-        print("%2d) %s - %s" % (i, request.req_id, request.get_name()))
-    req_selection = input('Select a request> ')
 
     try:
-        req_selection = int(req_selection)
-        req_obj = requests[req_selection]
-    except:
+        req_selection = int(choosen_request)
+        request = requests[req_selection]
+    except IndexError:
         return
 
-    print("Request details:")
-    for field_name, field_value in req_obj.get_fields():
-        print("- %s: %s" % (field_name, field_value))
-
     h = hashlib.sha256()
-    h.update(req_obj.key_data.encode('utf-8'))
+    h.update(request.key_data.encode('utf-8'))
     print("Request hash: %s" % h.hexdigest())
 
     print("You are about to sign this request with the following CA:")
