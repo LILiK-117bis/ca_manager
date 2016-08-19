@@ -43,6 +43,30 @@ class CAManagerShell(cmd.Cmd, object):
         except ValueError:
             print "Malformed input: %s" % l
 
+    def do_sign_request(self, l):
+        'Sign a certificate from a request'
+
+        # argument number is too low
+        if len(l) < 2:
+
+            # print available requests
+            print "Available request"
+            print_available_requests(self.ca_manager)
+
+            print "=================="
+
+            # print available ca
+            print "Available authority"
+            print_available_authorities(self.ca_manager)
+
+            print "=================="
+
+            # print usage
+            print "usage: sign_request {{ n }} {{ m }}"
+        else:
+            [request_number, authority_number] = l.split(" ", 2)[:2]
+            sign_request(self.ca_manager, request_number, authority_number)
+
     def do_quit(self, l):
         'Quit this shell'
         return True
