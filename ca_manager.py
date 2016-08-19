@@ -209,47 +209,6 @@ def main():
 
     with CAManager(MANAGER_PATH) as ca_manager:
 
-class CAManagerShell(cmd.Cmd):
-    intro= "# LILiK CA Manager"
-    prompt= "(CA Manager)> "
-
-    def __init__(self, path):
-        self.ca_manager= CAManager(path)
-        init_manager([
-            path,
-            REQUESTS_PATH,
-            OUTPUT_PATH,
-            RESULTS_PATH,
-            ])
-
-    def do_ls(self):
-        'List the available certification authorities: LS'
-        list_cas(ca_manager)
-
-    def do_show_ca(self):
-        'Show certification authority information: SHOW_CA example'
-        raise NotImplementedError()
-
-    def do_gen_ssh_ca(self):
-        'Generate a SSH certification authority: GEN_SSH_CA'
-        ca_id = input("CA unique id> ")
-        ca_name = input("CA human-readable name> ")
-        ca_manager.create_ssh_ca(ca_id, ca_name)
-
-    def do_gen_ssl_ca(self):
-        'Generate a SSL certification authority: GEN_SSL_CA'
-        ca_id = input("CA unique id> ")
-        ca_name = input("CA human-readable name> ")
-        ca_manager.create_ssl_ca(ca_id, ca_name)
-
-    def do_sign_request(self):
-        'Sign a certificate from a request'
-        sign_request(ca_manager)
-
-    def do_quit(self):
-        'Quit this shell'
-        return True
-
 def list_cas(ca_manager):
     for ca_id, ca_name, ca_type in ca_manager.get_cas_list():
         print("- [%3s] %-15s (%s)" % (ca_type, ca_id, ca_name))
