@@ -221,9 +221,6 @@ def sign_request(ca_manager, choosen_request, choosen_ca):
 
     print("You are about to sign this request with the following CA:")
     print("- %s (%s)" % (authority.ca_id, authority.name))
-    confirm = input('Proceed? (type yes)> ')
-    if confirm != 'yes':
-        return
 
     cert_path = authority.sign(request)
     ca_manager.drop_request(request)
