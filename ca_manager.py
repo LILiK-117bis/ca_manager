@@ -366,20 +366,32 @@ class CAManager(object):
 
 
 def init_manager(paths):
+    """
+    Initiate the manager by creating the
+    directories to store CAs and requests.
+
+    Create a database to store the information
+    """
     db_path = os.path.join(paths[0], 'ca_manager.db')
 
     directories = ['ssh_cas', 'ssl_cas']
 
+    # ensure the directories needed by CAManager
+    # exists
     for dirpath in paths:
         if not os.path.exists(dirpath):
             os.mkdir(dirpath)
 
+    # ensure ssh_cas ad ssl_cas directories
+    # exists in MANAGER_PATH
     for dirname in directories:
         dirpath = os.path.join(paths[0], dirname)
 
         if not os.path.exists(dirpath):
             os.mkdir(dirpath)
 
+    # ensure the database exists
+    # in MANAGER_PATH
     if not os.path.exists(db_path):
         conn = sqlite3.connect(db_path)
         c = conn.cursor()
