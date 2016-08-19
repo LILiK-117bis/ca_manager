@@ -42,8 +42,6 @@ def exit_bad(reason):
 
 
 def main():
-    global REQUESTS_PATH
-    global RESULTS_PATH
 
     logger.info('Shell started')
 
