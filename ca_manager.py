@@ -380,7 +380,7 @@ def init_manager(paths):
     # exists
     for dirpath in paths:
         if not os.path.exists(dirpath):
-            os.mkdir(dirpath)
+            os.makedirs(dirpath)
 
     # ensure ssh_cas ad ssl_cas directories
     # exists in MANAGER_PATH
