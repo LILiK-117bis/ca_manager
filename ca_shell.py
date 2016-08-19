@@ -76,3 +76,9 @@ def print_available_authorities(ca_manager):
         (ca_id, ca_name, ca_type) = ca_item
         print("- %d : [%3s] %-15s (%s)" % (i ,ca_type, ca_id, ca_name))
 
+def print_available_requests(ca_manager):
+    requests = ca_manager.get_requests()
+    for i, request in enumerate(requests):
+        print("- %d : %s" % (i, request))
+    else:
+        print("No requests")
