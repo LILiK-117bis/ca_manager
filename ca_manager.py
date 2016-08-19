@@ -191,24 +191,6 @@ def init_manager(paths):
         conn.commit()
         conn.close()
 
-
-def main():
-    global MANAGER_PATH
-
-    init_manager([MANAGER_PATH, REQUESTS_PATH, OUTPUT_PATH, RESULTS_PATH])
-
-    menu_entries = [
-        ("list-cas", "List available CAs"),
-        ("show-ca", "Show CA info"),
-        ("gen-ssh-ca", "Generate SSH CA"),
-        ("gen-ssl-ca", "Generate SSL CA"),
-        ("sign-request", "Sign request"),
-        ("help", "Show this message"),
-        ("quit", "Quit from CA manager")
-    ]
-
-    with CAManager(MANAGER_PATH) as ca_manager:
-
 def list_cas(ca_manager):
     for ca_id, ca_name, ca_type in ca_manager.get_cas_list():
         print("- [%3s] %-15s (%s)" % (ca_type, ca_id, ca_name))
