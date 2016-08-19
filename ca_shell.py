@@ -70,3 +70,9 @@ class CAManagerShell(cmd.Cmd, object):
     def do_quit(self, l):
         'Quit this shell'
         return True
+
+def print_available_authorities(ca_manager):
+    for i, ca_item  in enumerate(ca_manager.get_cas_list()):
+        (ca_id, ca_name, ca_type) = ca_item
+        print("- %d : [%3s] %-15s (%s)" % (i ,ca_type, ca_id, ca_name))
+
