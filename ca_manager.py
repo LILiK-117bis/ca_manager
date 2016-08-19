@@ -195,17 +195,16 @@ def list_cas(ca_manager):
     for ca_id, ca_name, ca_type in ca_manager.get_cas_list():
         print("- [%3s] %-15s (%s)" % (ca_type, ca_id, ca_name))
 
+def sign_request(ca_manager, choosen_request, choosen_ca):
 
-def sign_request(ca_manager):
-    global RESULTS_PATH
-
-    list_cas(ca_manager)
-    ca_selection = input('Select a CA> ')
+    authorities = ca_manager.get_cas_list()
 
     try:
-        authority = ca_manager.get_ca(ca_selection)
-    except:
-        print("Could not find CA '%s'" % ca_selection)
+        ca_selection = int(choosen_ca)
+        (authority_id, authority_name, authority_type) = authorities[ca_selection]
+        authority = ca_manager.get_ca(authority_name)
+    except IndexError:
+        print("Could not find CA '%d'" % choosen_ca)
         return
 
     requests = ca_manager.get_requests()
