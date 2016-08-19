@@ -220,16 +220,27 @@ class SSLAuthority(Authority):
 
         return cert_path
 
+
+
 class CAManager(object):
+    """
+    Middleware to interact with ssh-keygen
+    """
     def __init__(self, path):
         self.path = path
 
     def __enter__(self):
+        """
+        Enter a context block, connect to database
+        """
         self.conn = sqlite3.connect(self._get_db_path())
 
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
+        """
+        Exit a context block, disconnect from database
+        """
         if exc_type is not None:
             print(exc_type, exc_value)
             print(traceback)
@@ -254,6 +265,10 @@ class CAManager(object):
         return os.path.join(cas_dir, ca_id)
 
     def create_ssh_ca(self, ca_id, ca_name):
+        """
+        Create a new ssh certification authority, insert
+        it into the database
+        """
         ca_path = self._get_ssh_ca_path(ca_id)
 
         authority = SSHAuthority(ca_id, ca_name, ca_path)
@@ -266,6 +281,10 @@ class CAManager(object):
         self.conn.commit()
 
     def create_ssl_ca(self, ca_id, ca_name):
+        """
+        Create a new ssl certification authority, insert
+        it into the database
+        """
         ca_path = self._get_ssl_ca_path(ca_id)
 
         authority = SSLAuthority(ca_id, ca_name, ca_path)
@@ -278,6 +297,10 @@ class CAManager(object):
         self.conn.commit()
 
     def get_cas_list(self):
+        """
+        Get all the certification authorities saved in
+        the database
+        """
         c = self.conn.cursor()
 
         c.execute("""SELECT id, name, type FROM cas""")
@@ -285,6 +308,9 @@ class CAManager(object):
         return c.fetchall()
 
     def get_ca(self, ca_id):
+        """
+        Get a specific certification authority from the database
+        """
         c = self.conn.cursor()
         c.execute("""SELECT name, type FROM cas WHERE id = ?""", (ca_id, ))
 
