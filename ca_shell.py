@@ -33,6 +33,16 @@ class CAManagerShell(cmd.Cmd, object):
         except ValueError:
             print "Malformed input: %s" % l
 
+    def do_gen_ssl_ca(self, l):
+        'Generate a SSL certification authority: GEN_SSL_CA id name'
+
+        try:
+            [ca_id, ca_name] = l.split(" ", 2)[:2]
+            self.ca_manager.create_ssl_ca(ca_id, ca_name)
+
+        except ValueError:
+            print "Malformed input: %s" % l
+
     def do_quit(self, l):
         'Quit this shell'
         return True
