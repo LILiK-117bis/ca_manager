@@ -226,7 +226,3 @@ def sign_request(ca_manager, choosen_request, choosen_ca):
     ca_manager.drop_request(request)
 
     shutil.copy(cert_path, os.path.join(RESULTS_PATH, request.req_id))
-
-
-if __name__ == '__main__':
-    main()
