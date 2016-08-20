@@ -35,7 +35,7 @@ class CAManagerShell(cmd.Cmd, object):
             self.ca_manager.create_ssh_ca(ca_id, ca_name)
 
         except ValueError:
-            print "Malformed input: %s" % l
+            print("Malformed input: %s" % l)
 
     def do_gen_ssl_ca(self, l):
         'Generate a SSL certification authority: GEN_SSL_CA id name'
@@ -45,7 +45,7 @@ class CAManagerShell(cmd.Cmd, object):
             self.ca_manager.create_ssl_ca(ca_id, ca_name)
 
         except ValueError:
-            print "Malformed input: %s" % l
+            print("Malformed input: %s" % l)
 
     def do_sign_request(self, l):
         'Sign a certificate from a request'
@@ -54,19 +54,19 @@ class CAManagerShell(cmd.Cmd, object):
         if len(l) < 2:
 
             # print available requests
-            print "Available request"
+            print("Available request")
             print_available_requests(self.ca_manager)
 
-            print "=================="
+            print("==================")
 
             # print available ca
-            print "Available authority"
+            print("Available authority")
             print_available_authorities(self.ca_manager)
 
-            print "=================="
+            print("==================")
 
             # print usage
-            print "usage: sign_request {{ n }} {{ m }}"
+            print("usage: sign_request {{ n }} {{ m }}")
         else:
             [request_number, authority_number] = l.split(" ", 2)[:2]
             sign_request(self.ca_manager, request_number, authority_number)
