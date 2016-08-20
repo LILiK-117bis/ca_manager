@@ -75,9 +75,9 @@ class CAManagerShell(cmd.Cmd, object):
         return results
 
     def do_sign_request(self, l):
+        'Sign a request using a CA: SIGN_REQUEST ca_name request_id'
         argv = l.split()
         argc = len(argv)
-        'Sign a certificate from a request'
         # argument number is too low
         if argc < 3:
 
