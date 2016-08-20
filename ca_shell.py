@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import cmd
+import sys
 
 from ca_manager import list_cas, sign_request
 
@@ -16,48 +17,69 @@ class CAManagerShell(cmd.Cmd, object):
         super(CAManagerShell, self).__init__()
         self.ca_manager= ca_manager
 
-    def do_ls(self, l):
-        'List the available certification authorities: LS'
+    def do_ls_ca(self, l):
+        'List the available certification authorities: LS_CA'
         list_cas(self.ca_manager)
 
-    def do_requests(self, l):
-        'List the available certification requests: REQUESTS'
+    def do_ls_requests(self, l):
+        'List the available certification requests: LS_REQUESTS'
         print_available_requests(self.ca_manager)
 
-    def do_show_ca(self, l):
-        'Show certification authority information: SHOW_CA'
-        raise NotImplementedError()
+    def do_describe_cas(self, l):
+        'Show certification authority information: DESCRIBE_CAS'
+        raise NotImplementedError
 
-    def do_gen_ssh_ca(self, l):
-        'Generate a SSH certification authority: GEN_SSH_CA id name'
+    def do_gen_ca(self, l):
+        'Generate a certification authority: GEN_CA type id name'
+        argv = l.split()
+        argc = len(argv)
         try:
-            [ca_id, ca_name] = l.split(" ", 2)[:2]
-            self.ca_manager.create_ssh_ca(ca_id, ca_name)
+            if argc > 3:
+                raise(ValueError)
+
+            if argc < 1:
+                ca_type = input("CA type> ")
+            else:
+                ca_type = argv[0]
+
+            if argc < 2:
+                ca_id = input("CA unique id> ")
+            else:
+                ca_name = argv[1]
+
+            if argc < 3:
+                ca_name = input("CA human-readable name> ")
+            else:
+                ca_name = argv[2]
 
         except ValueError:
             print("Malformed input: %s" % l)
+            return
 
-    def do_gen_ssl_ca(self, l):
-        'Generate a SSL certification authority: GEN_SSL_CA id name'
-
-        try:
-            [ca_id, ca_name] = l.split(" ", 2)[:2]
+        if ca_type == "ssl":
             self.ca_manager.create_ssl_ca(ca_id, ca_name)
+        elif ca_type == "ssh":
+            self.ca_manager.create_ssh_ca(ca_id, ca_name)
+        else:
+            print("Invalid CA type: %s" % ca_type)
+            return
 
-        except ValueError:
-            print("Malformed input: %s" % l)
+    def complete_gen_ca(self, text, line, begidx, endidx):
+
+        results = ''
+
+        argc = len(("%send"%line).split())
+
+        if argc == 2:
+            results = [a for a in ["ssl", "ssh"] if a.startswith(text)]
+        return results
 
     def do_sign_request(self, l):
+        argv = l.split()
+        argc = len(argv)
         'Sign a certificate from a request'
-
         # argument number is too low
-        if len(l) < 2:
-
-            # print available requests
-            print("Available request")
-            print_available_requests(self.ca_manager)
-
-            print("==================")
+        if argc < 3:
 
             # print available ca
             print("Available authority")
@@ -65,15 +87,40 @@ class CAManagerShell(cmd.Cmd, object):
 
             print("==================")
 
+            # print available requests
+            print("Available request")
+            print_available_requests(self.ca_manager)
+
+            print("==================")
+
             # print usage
-            print("usage: sign_request {{ n }} {{ m }}")
+            print("usage: sign_request autority request")
         else:
-            [request_number, authority_number] = l.split(" ", 2)[:2]
-            sign_request(self.ca_manager, request_number, authority_number)
+            # [request_number, authority_number] =
+            authority_name = argv[0]
+            request_name = " ".join(argv[1:])
+            sign_request(self.ca_manager, request_name, authority_name)
+
+    def complete_sign_request(self, text, line, begidx, endidx):
+        results = ''
+        argc = len(("%send"%line).split())
+
+        if argc == 2:
+            results = [a[0] for a in self.ca_manager.get_cas_list() if a[0].startswith(text)]
+        elif argc == 3:
+            results = [a for a in self.ca_manager.get_requests() if str(a).startswith(text)]
+        return results
+
+    def complete(self, text, state):
+        results = super().complete(text, state)
+        if results is not None:
+            return "%s "%results
+        return results
 
     def do_quit(self, l):
         'Quit this shell'
         return True
+
 
 def print_available_authorities(ca_manager):
     for i, ca_item  in enumerate(ca_manager.get_cas_list()):
@@ -82,7 +129,7 @@ def print_available_authorities(ca_manager):
 
 def print_available_requests(ca_manager):
     requests = ca_manager.get_requests()
+    if not requests:
+        print("No requests")
     for i, request in enumerate(requests):
         print("- %d : %s" % (i, request))
-    else:
-        print("No requests")

@@ -195,13 +195,10 @@ def list_cas(ca_manager):
     for ca_id, ca_name, ca_type in ca_manager.get_cas_list():
         print("- [%3s] %-15s (%s)" % (ca_type, ca_id, ca_name))
 
-def sign_request(ca_manager, choosen_request, choosen_ca):
-
-    authorities = ca_manager.get_cas_list()
+def sign_request(ca_manager, request_name, authority_name):
+    request = None
 
     try:
-        ca_selection = int(choosen_ca)
-        (authority_id, authority_name, authority_type) = authorities[ca_selection]
         authority = ca_manager.get_ca(authority_name)
     except IndexError:
         print("Could not find CA '%d'" % choosen_ca)
@@ -209,18 +206,21 @@ def sign_request(ca_manager, choosen_request, choosen_ca):
 
     requests = ca_manager.get_requests()
 
-    try:
-        req_selection = int(choosen_request)
-        request = requests[req_selection]
-    except IndexError:
-        return
+    for i in requests:
+        if str(i) == request_name:
+            request = i
+    if request is None:
+        raise(IndexError)
 
     h = hashlib.sha256()
     h.update(request.key_data.encode('utf-8'))
     print("Request hash: %s" % h.hexdigest())
 
     print("You are about to sign this request with the following CA:")
-    print("- %s (%s)" % (authority.ca_id, authority.name))
+    confirm = input('Proceed? (type yes)> ')
+    if confirm != 'yes':
+        print ("user aborT")
+        return
 
     cert_path = authority.sign(request)
     ca_manager.drop_request(request)
