@@ -101,7 +101,7 @@ class SSHAuthority(Authority):
         if os.path.exists(self.path):
             raise ValueError("A CA with the same id and type already exists")
 
-        subprocess.call(['ssh-keygen',
+        subprocess.check_output(['ssh-keygen',
             '-f', self.path,
             '-t', self.key_algorithm,
             '-C', self.name])
@@ -132,7 +132,7 @@ class SSHAuthority(Authority):
             if request.root_requested:
                 login_names.append('root')
 
-            subprocess.call(['ssh-keygen',
+            subprocess.check_output(['ssh-keygen',
                 '-s', ca_private_key,
                 '-I', 'user_%s' % request.user_name,
                 '-n', ','.join(login_names),
@@ -140,7 +140,7 @@ class SSHAuthority(Authority):
                 '-z', str(next_serial),
                 pub_key_path])
         elif type(request) == HostSSHRequest:
-            subprocess.call(['ssh-keygen',
+            subprocess.check_output(['ssh-keygen',
                 '-s', ca_private_key,
                 '-I', 'host_%s' % request.host_name.replace('.', '_'),
                 '-h',
@@ -165,13 +165,13 @@ class SSLAuthority(Authority):
         if os.path.exists(self.path):
             raise ValueError("A CA with the same id and type already exists")
 
-        subprocess.call(['openssl',
+        subprocess.check_output(['openssl',
             'genrsa',
             '-%s'%self.ca_key_algorithm,
             '-out', '%s'%(self.path),
             self.key_length])
 
-        subprocess.call(['openssl',
+        subprocess.check_output(['openssl',
             'req',
             '-new',
             '-x509',

@@ -8,7 +8,6 @@ import os
 import os.path
 import shutil
 import sqlite3
-import subprocess
 import tempfile
 
 from certificate_requests import *
