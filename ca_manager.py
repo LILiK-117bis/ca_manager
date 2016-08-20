@@ -107,7 +107,11 @@ class CAManager(object):
         c = self.conn.cursor()
         c.execute("""SELECT name, type FROM cas WHERE id = ?""", (ca_id, ))
 
-        ca_name, ca_type = c.fetchone()
+        result = c.fetchone()
+        if not result:
+            raise ValueError('Unknown CA "%s"'%ca_id)
+
+        ca_name, ca_type = result
 
         if ca_type == 'ssh':
             ca_path = self._get_ssh_ca_path(ca_id)
@@ -116,7 +120,7 @@ class CAManager(object):
             ca_path = self._get_ssl_ca_path(ca_id)
             return SSLAuthority(ca_id, ca_name, ca_path)
 
-    def get_requests(self):
+    def get_requests(self, ca_type=None):
 
         req_objs = []
 
@@ -125,6 +129,9 @@ class CAManager(object):
 
             with open(request_path, 'r') as stream:
                 req = json.load(stream)
+
+            if ca_type and not req['keyType'].startswith("%s_"%ca_type):
+                continue
 
             if req['keyType'] == 'ssh_user':
                 user_name = req['userName']

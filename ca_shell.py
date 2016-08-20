@@ -78,22 +78,32 @@ class CAManagerShell(cmd.Cmd, object):
         'Sign a request using a CA: SIGN_REQUEST ca_name request_id'
         argv = l.split()
         argc = len(argv)
+
         # argument number is too low
-        if argc < 3:
+        if argc < 2:
+            if argc == 0:
+                # print available ca
+                print("Available authority")
+                print_available_authorities(self.ca_manager)
 
-            # print available ca
-            print("Available authority")
-            print_available_authorities(self.ca_manager)
+                print("==================")
+
+                # print available requests
+                print("Available request")
+                print_available_requests(self.ca_manager)
+
+            elif argc == 1:
+                ca_type = None
+                try:
+                    ca_type = self.ca_manager.get_ca(argv[0]).ca_type
+                except Exception as e:
+                    print ("Error: %s"%e)
+                    return
+                # print available requests
+                print("Available request for CA %s (type %s)"%(argv[0], ca_type))
+                print_available_requests(self.ca_manager, ca_type)
 
             print("==================")
-
-            # print available requests
-            print("Available request")
-            print_available_requests(self.ca_manager)
-
-            print("==================")
-
-            # print usage
             print("usage: sign_request autority request")
         else:
             # [request_number, authority_number] =
@@ -108,7 +118,14 @@ class CAManagerShell(cmd.Cmd, object):
         if argc == 2:
             results = [a[0] for a in self.ca_manager.get_cas_list() if a[0].startswith(text)]
         elif argc == 3:
-            results = [a for a in self.ca_manager.get_requests() if str(a).startswith(text)]
+            ca_type = None
+            try:
+                ca_type = self.ca_manager.get_ca(line.split()[1]).ca_type
+            except Exception as e:
+                print ("Error: %s"%e)
+                return
+
+            results = [a for a in self.ca_manager.get_requests(ca_type) if str(a).startswith(text)]
         return results
 
     def complete(self, text, state):
@@ -127,8 +144,8 @@ def print_available_authorities(ca_manager):
         (ca_id, ca_name, ca_type) = ca_item
         print("- %d : [%3s] %-15s (%s)" % (i ,ca_type, ca_id, ca_name))
 
-def print_available_requests(ca_manager):
-    requests = ca_manager.get_requests()
+def print_available_requests(ca_manager, ca_type=None):
+    requests = ca_manager.get_requests(ca_type)
     if not requests:
         print("No requests")
     for i, request in enumerate(requests):
