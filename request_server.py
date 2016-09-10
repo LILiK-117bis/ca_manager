@@ -1,10 +1,24 @@
 #!/usr/bin/env python3
 
 import json
+import logging
 import os.path
 import sys
 import time
 import uuid
+
+logging.basicConfig(level= logging.INFO)
+
+logger = logging.getLogger(__name__)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+
+handler = logging.FileHandler('/home/request/request_server.log')
+
+handler.setFormatter(formatter)
+
+logger.addHandler(handler)
 
 
 REQUESTS_PATH = "/var/lib/ca_manager/requests"
@@ -12,15 +26,16 @@ RESULTS_PATH = "/var/lib/ca_manager/results"
 
 
 def exit_good(response):
+    logger.info('JSON accepted, send ok')
     response['status'] = 'ok'
     print(json.dumps(response))
     sys.exit(0)
 
-
 def exit_bad(reason):
+    logger.info('JSON rejected, send error; error %s', reason)
     response = {
         'status': 'error',
-        'reason': reason
+        'reason': reason,
     }
     print(json.dumps(response))
     sys.exit(0)
@@ -30,6 +45,8 @@ def main():
     global REQUESTS_PATH
     global RESULTS_PATH
 
+    logger.info('Shell started')
+
     response = {}
 
     if (len(sys.argv) > 2):
@@ -37,23 +54,32 @@ def main():
     else:
         request_data = sys.stdin.read(10000)
 
+    logger.info('Got request data: %s', request_data)
+
     try:
         metarequest = json.loads(request_data)
         assert 'type' in metarequest
     except:
+        logger.info('"Type" key not found in request')
         exit_bad('bad_json')
 
     if metarequest['type'] == 'sign_request':
+        logger.info('Got a sign request')
         request = metarequest['request']
         request_id = str(uuid.uuid4())
+        logger.info('Request id %s', request_id)
 
+        logger.info('Writing request to target directory')
         with open(os.path.join(REQUESTS_PATH, request_id), 'w') as stream:
             stream.write(json.dumps(request))
 
         exit_good({ 'requestID': request_id })
+
     elif metarequest['type'] == 'get_certificate':
+        logger.info('Got a GET request')
         request_id = metarequest['requestID']
 
+        logger.info('Request id: %s', request_id)
         result_path = os.path.join(RESULTS_PATH, request_id)
 
         while not os.path.exists(result_path):
@@ -63,9 +89,12 @@ def main():
             result_data = stream.read()
 
         exit_good({ 'requestID': request_id, 'result': result_data })
+
     else:
+        logger.info('Request type not supported: %s', metarequest['type'])
         exit_bad('unknown_type')
 
+    logger.info('Stopping shell')
 
 if __name__ == '__main__':
     main()
