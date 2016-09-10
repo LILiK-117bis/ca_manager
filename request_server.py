@@ -55,6 +55,7 @@ def main():
         assert 'type' in metarequest
     except:
         logger.info('"Type" key not found in request')
+        logger.info('Stopping shell')
         exit_bad('bad_json')
 
     if metarequest['type'] == 'sign_request':
@@ -67,6 +68,7 @@ def main():
         with open(os.path.join(REQUESTS_PATH, request_id), 'w') as stream:
             stream.write(json.dumps(request))
 
+        logger.info('Stopping shell')
         exit_good({ 'requestID': request_id })
 
     elif metarequest['type'] == 'get_certificate':
@@ -82,13 +84,14 @@ def main():
         with open(result_path, 'r') as stream:
             result_data = stream.read()
 
+        logger.info('Stopping shell')
         exit_good({ 'requestID': request_id, 'result': result_data })
 
     else:
         logger.info('Request type not supported: %s', metarequest['type'])
+        logger.info('Stopping shell')
         exit_bad('unknown_type')
 
-    logger.info('Stopping shell')
 
 if __name__ == '__main__':
     main()
