@@ -7,7 +7,7 @@ This collection of tools is our take on managing a CA, signing SSH keys and cert
 
 #### `request_server.py`
 
-This is a shell for a user, the shell only reads the input from the user and return a json.
+This is a shell for a user, the shell only reads the input from the user and return a JSON, this user can be used with Ansible to request and retrive certificates.
 
 The input must be a JSON file, e.g
 
@@ -22,7 +22,16 @@ The input must be a JSON file, e.g
 }
 ```
 
-the example is a `sign_request` for a ssh host certificate
+the example is a `sign_request` for a ssh host certificate.
+
+The shell just output a json with `status` and `reason` keys.
+
+```JSON
+{
+	"reason" : ...,
+	"status" : ...
+}
+```
 
 The server logs can be found at `/home/request/request_server.log`
 
