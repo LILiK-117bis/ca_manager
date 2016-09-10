@@ -14,7 +14,7 @@ logging.basicConfig(
         level= logging.INFO,
         )
 
-logger = logging.getLogger('request_server'))
+logger = logging.getLogger('request_server')
 
 
 REQUESTS_PATH = "/var/lib/ca_manager/requests"
