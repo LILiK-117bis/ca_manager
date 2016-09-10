@@ -13,8 +13,6 @@ import tempfile
 from certificate_requests import *
 from paths import *
 
-
-
 class CAManager(object):
     """
     Middleware to interact with ssh-keygen
@@ -232,3 +230,19 @@ def sign_request(ca_manager, request_name, authority_name):
     ca_manager.drop_request(request)
 
     shutil.copy(cert_path, os.path.join(RESULTS_PATH, request.req_id))
+
+
+if __name__ == '__main__':
+    from ca_shell import CAManagerShell
+
+    init_manager([
+        MANAGER_PATH,
+        REQUESTS_PATH,
+        OUTPUT_PATH,
+        RESULTS_PATH,
+        ])
+
+
+    with CAManager(MANAGER_PATH) as ca_manager:
+
+        CAManagerShell(ca_manager).cmdloop()
