@@ -7,18 +7,14 @@ import sys
 import time
 import uuid
 
-logging.basicConfig(level= logging.INFO)
+logfile= '/home/request/request_server.log'
+logging.basicConfig(
+        filename= logfile,
+        format= '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level= logging.INFO,
+        )
 
-logger = logging.getLogger(__name__)
-
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-
-handler = logging.FileHandler('/home/request/request_server.log')
-
-handler.setFormatter(formatter)
-
-logger.addHandler(handler)
+logger = logging.getLogger('request_server'))
 
 
 REQUESTS_PATH = "/var/lib/ca_manager/requests"
