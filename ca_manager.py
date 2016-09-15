@@ -13,6 +13,10 @@ import tempfile
 from certificate_requests import *
 from paths import *
 
+__doc__= """
+Define class to interact with certificate requests and Certification Authority
+"""
+
 class CAManager(object):
     """
     Middleware to interact with ssh-keygen

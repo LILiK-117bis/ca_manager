@@ -6,6 +6,10 @@ import sys
 
 from ca_manager import list_cas, sign_request
 
+__doc__= """
+        Class to make a shell and interact with the user
+        """
+
 class CAManagerShell(cmd.Cmd, object):
     intro= """# LILiK CA Manager\n
     Welcome to the certification authority shell.

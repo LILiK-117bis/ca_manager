@@ -8,6 +8,10 @@ import subprocess
 
 from paths import *
 
+__doc__= """
+Module of classes to handle certificate requests
+"""
+
 class SignRequest(object):
     def __init__(self, req_id):
         self.req_id = req_id

@@ -7,7 +7,12 @@ import sys
 import time
 import uuid
 
+__doc__= """
+Procedure to spawn a shell for automation, used by Ansible
+"""
+
 logfile= '/home/request/request_server.log'
+
 logging.basicConfig(
         filename= logfile,
         format= '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
