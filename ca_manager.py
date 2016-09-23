@@ -202,6 +202,20 @@ class CALookup(object):
         """
         Get a specific certification authority from the database
         """
+        c = self.conn.cursor()
+        c.execute("""SELECT name, type FROM cas WHERE id = ?""", (ca_id, ))
+
+        result = c.fetchone()
+        if not result:
+            raise ValueError('Unknown CA "%s"' % ca_id)
+
+        ca_name, ca_type = result
+
+        if ca_type.lower() == 'ssh':
+            return SSHAuthority(ca_id, ca_name, self.ssh_ca_dir)
+
+        elif ca_type.lower() == 'ssl':
+            return SSLAuthority(ca_id, ca_name, self.ssl_ca_dir)
 
     def __setitem__(self, ca_id, ca_value):
         """
