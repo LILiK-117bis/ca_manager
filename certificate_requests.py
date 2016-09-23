@@ -84,7 +84,11 @@ class Authority(object):
     def __init__(self, ca_id, name, ca_dir):
         self.ca_id = ca_id
         self.name = name
-        self.path = path
+        self.ca_dir = ca_dir
+
+    @property
+    def path(self):
+        return os.path.join(self.ca_dir, self.ca_id)
 
     def generate(self):
         raise NotImplementedError()
