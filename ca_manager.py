@@ -185,6 +185,11 @@ class CALookup(object):
         self.ssl_ca_dir = ssl_ca_dir
 
     def __iter__(self):
+        c = self.conn.cursor()
+
+        c.execute("""SELECT id, name, type FROM cas""")
+
+        return iter(c.fetchall())
 
     def __delitem__(self, ca_id):
         """
