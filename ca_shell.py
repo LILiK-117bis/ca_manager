@@ -23,7 +23,9 @@ class CAManagerShell(cmd.Cmd, object):
 
     def do_ls_ca(self, l):
         'List the available certification authorities: LS_CA'
-        list_cas(self.ca_manager)
+        print("type - id - name")
+        for ca_id, ca_name, ca_type in self.ca_manager.ca:
+            print("- [%3s] %-15s (%s)" % (ca_type, ca_id, ca_name))
 
     def do_ls_requests(self, l):
         'List the available certification requests: LS_REQUESTS'
