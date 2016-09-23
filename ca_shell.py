@@ -62,13 +62,7 @@ class CAManagerShell(cmd.Cmd, object):
             print("Malformed input: %s" % l)
             return
 
-        if ca_type == "ssl":
-            self.ca_manager.create_ssl_ca(ca_id, ca_name)
-        elif ca_type == "ssh":
-            self.ca_manager.create_ssh_ca(ca_id, ca_name)
-        else:
-            print("Invalid CA type: %s" % ca_type)
-            return
+        self.ca_manager.ca[ca_id] = (ca_name, ca_type)
 
     def complete_gen_ca(self, text, line, begidx, endidx):
 
