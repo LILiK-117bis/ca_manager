@@ -53,17 +53,9 @@ class CAManager(object):
     def ssh_ca_dir(self):
         return os.path.join(self.path, 'ssh_cas')
 
-    def _get_ssh_ca_path(self, ca_id):
-        cas_dir = self.ssh_ca_dir
-        return os.path.join(cas_dir, ca_id)
-
     @property
     def ssl_ca_dir(self):
         return os.path.join(self.path, 'ssl_cas')
-
-    def _get_ssl_ca_path(self, ca_id):
-        cas_dir = self.ssl_ca_dir
-        return os.path.join(cas_dir, ca_id)
 
     def create_ssh_ca(self, ca_id, ca_name):
         """
