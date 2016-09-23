@@ -195,6 +195,8 @@ class CALookup(object):
         """
         Delete a specific certification authority from the database
         """
+        c = self.conn.cursor()
+        c.execute("""DELETE FROM cas WHERE id = ?""", (ca_id, ))
 
     def __getitem__(self, ca_id):
         """
