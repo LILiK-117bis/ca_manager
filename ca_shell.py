@@ -4,7 +4,7 @@
 import cmd
 import sys
 
-from ca_manager import list_cas, sign_request
+from ca_manager import sign_request
 
 __doc__= """
         Class to make a shell and interact with the user
