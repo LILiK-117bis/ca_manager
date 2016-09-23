@@ -265,10 +265,6 @@ def init_manager(paths):
         conn.commit()
         conn.close()
 
-def list_cas(ca_manager):
-    for ca_id, ca_name, ca_type in ca_manager.get_cas_list():
-        print("- [%3s] %-15s (%s)" % (ca_type, ca_id, ca_name))
-
 def sign_request(ca_manager, request_name, authority_name):
     request = None
 
