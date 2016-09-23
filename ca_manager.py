@@ -23,6 +23,7 @@ class CAManager(object):
     """
     def __init__(self, path):
         self.path = path
+        self.ca = CALookup(self.ssh_ca_dir, self.ssl_ca_dir)
 
     def __enter__(self):
         """
@@ -167,6 +168,31 @@ class CAManager(object):
 
         os.unlink(os.path.join(REQUESTS_PATH, request.req_id))
 
+class CALookup(object):
+    """
+    Proxy to interact with the database, get CA as element or as list
+    """
+    def __init__(self, ssh_ca_dir, ssl_ca_dir):
+        self.ssh_ca_dir = ssh_ca_dir
+        self.ssl_ca_dir = ssl_ca_dir
+
+    def __iter__(self):
+
+    def __delitem__(self, ca_id):
+        """
+        Delete a specific certification authority from the database
+        """
+
+    def __getitem__(self, ca_id):
+        """
+        Get a specific certification authority from the database
+        """
+
+    def __setitem__(self, ca_id, ca_value):
+        """
+        Create a new certification authority, insert
+        it into the database
+        """
 
 def init_manager(paths):
     """
