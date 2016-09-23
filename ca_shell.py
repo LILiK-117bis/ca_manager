@@ -19,7 +19,7 @@ class CAManagerShell(cmd.Cmd, object):
 
     def __init__(self, ca_manager):
         super(CAManagerShell, self).__init__()
-        self.ca_manager= ca_manager
+        self.ca_manager = ca_manager
 
     def do_ls_ca(self, l):
         'List the available certification authorities: LS_CA'
@@ -75,7 +75,7 @@ class CAManagerShell(cmd.Cmd, object):
         return results
 
     def do_sign_request(self, l):
-        'Sign a request using a CA: SIGN_REQUEST ca_name request_id'
+        'Sign a request using a CA: SIGN_REQUEST ca_id request_id'
         argv = l.split()
         argc = len(argv)
 
@@ -94,13 +94,14 @@ class CAManagerShell(cmd.Cmd, object):
 
             elif argc == 1:
                 ca_type = None
+                ca_id = argv[0]
                 try:
-                    ca_type = self.ca_manager.get_ca(argv[0]).ca_type
+                    ca_type = self.ca_manager.ca[ca_id].ca_type
                 except Exception as e:
                     print ("Error: %s"%e)
                     return
                 # print available requests
-                print("Available request for CA %s (type %s)"%(argv[0], ca_type))
+                print("Available request for CA %s (type %s)" % (ca_id, ca_type))
                 print_available_requests(self.ca_manager, ca_type)
 
             print("==================")
@@ -113,19 +114,21 @@ class CAManagerShell(cmd.Cmd, object):
 
     def complete_sign_request(self, text, line, begidx, endidx):
         results = ''
-        argc = len(("%send"%line).split())
+        #too much magic
+        argc = len(( "%send" % line ).split() )
 
         if argc == 2:
-            results = [a[0] for a in self.ca_manager.get_cas_list() if a[0].startswith(text)]
+            results = [a[0] for a in self.ca_manager.ca if a[0].startswith(text)]
         elif argc == 3:
             ca_type = None
             try:
-                ca_type = self.ca_manager.get_ca(line.split()[1]).ca_type
+                ca_id = line.split()[1]
+                ca_type = self.ca_manager.ca[ca_id].ca_type
             except Exception as e:
                 print ("Error: %s"%e)
                 return
 
-            results = [a for a in self.ca_manager.get_requests(ca_type) if str(a).startswith(text)]
+            results = [a for a in self.ca_manager.request[ca_type] if str(a).startswith(text)]
         return results
 
     def complete(self, text, state):

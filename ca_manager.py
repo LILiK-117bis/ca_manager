@@ -11,7 +11,8 @@ import sqlite3
 import tempfile
 
 from certificate_requests import *
-from paths import *
+#from paths import *
+from local import *
 
 __doc__= """
 Define classes to interact with certificate requests and Certification Authority
@@ -21,9 +22,11 @@ class CAManager(object):
     """
     Middleware to interact with ssh-keygen
     """
+
     def __init__(self, path):
         self.path = path
         self.ca = CALookup(self.ssh_ca_dir, self.ssl_ca_dir)
+        self.request = RequestLookup()
 
     def __enter__(self):
         """
@@ -56,69 +59,6 @@ class CAManager(object):
     @property
     def ssl_ca_dir(self):
         return os.path.join(self.path, 'ssl_cas')
-
-    def create_ssh_ca(self, ca_id, ca_name):
-        """
-        Create a new ssh certification authority, insert
-        it into the database
-        """
-        ca_path = self._get_ssh_ca_path(ca_id)
-
-        authority = SSHAuthority(ca_id, ca_name, ca_path)
-
-        authority.generate()
-
-        c = self.conn.cursor()
-        c.execute("""INSERT INTO cas VALUES (?, ?, 'ssh')""",
-                (ca_id, ca_name))
-        self.conn.commit()
-
-    def create_ssl_ca(self, ca_id, ca_name):
-        """
-        Create a new ssl certification authority, insert
-        it into the database
-        """
-        ca_path = self._get_ssl_ca_path(ca_id)
-
-        authority = SSLAuthority(ca_id, ca_name, ca_path)
-
-        authority.generate()
-
-        c = self.conn.cursor()
-        c.execute("""INSERT INTO cas VALUES (?, ?, 'ssl')""",
-                (ca_id, ca_name))
-        self.conn.commit()
-
-    def get_cas_list(self):
-        """
-        Get all the certification authorities saved in
-        the database
-        """
-        c = self.conn.cursor()
-
-        c.execute("""SELECT id, name, type FROM cas""")
-
-        return c.fetchall()
-
-    def get_ca(self, ca_id):
-        """
-        Get a specific certification authority from the database
-        """
-        c = self.conn.cursor()
-        c.execute("""SELECT name, type FROM cas WHERE id = ?""", (ca_id, ))
-
-        result = c.fetchone()
-        if not result:
-            raise ValueError('Unknown CA "%s"'%ca_id)
-
-        ca_name, ca_type = result
-
-        if ca_type == 'ssh':
-            ca_path = self._get_ssh_ca_path(ca_id)
-            return SSHAuthority(ca_id, ca_name, ca_path)
-        elif ca_type == 'ssl':
-            ca_path = self._get_ssl_ca_path(ca_id)
-            return SSLAuthority(ca_id, ca_name, ca_path)
 
     def get_requests(self, ca_type=None):
 
@@ -231,6 +171,38 @@ class CALookup(object):
                 (ca_id, ca_name, ca_type.lower()))
         self.conn.commit()
 
+class RequestLookup(object):
+    """
+    Proxy to interact with the requests
+    """
+    def __init__(self):
+        self.request_dir = REQUESTS_PATH
+        self.output_dir = OUTPUT_PATH
+
+    def __iter__(self):
+        pass
+        #return iter(c.fetchall())
+
+    def __delitem__(self, request_id):
+        """
+        Delete a specific certificate request
+        """
+        os.unlink(os.path.join(self.request_dir, request_id))
+
+    def __getitem__(self, request_id):
+        """
+        Get a specific certificate request
+        """
+        request_path = os.path.join(self.request_dir, request_id)
+
+    @property
+    def ssh(self):
+        pass
+
+    @property
+    def ssl(self):
+        pass
+
 def init_manager(paths):
     """
     Initiate the manager by creating the
@@ -269,7 +241,7 @@ def sign_request(ca_manager, request_name, authority_name):
     request = None
 
     try:
-        authority = ca_manager.get_ca(authority_name)
+        authority = ca_manager.ca[authority_name]
     except IndexError:
         print("Could not find CA '%d'" % choosen_ca)
         return
