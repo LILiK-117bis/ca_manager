@@ -28,7 +28,7 @@ class CAManager(object):
         """
         Enter a context block, connect to database
         """
-        self.conn = sqlite3.connect(self._get_db_path())
+        self.conn = sqlite3.connect(self.db_path)
 
         return self
 
@@ -42,7 +42,8 @@ class CAManager(object):
 
         self.conn.close()
 
-    def _get_db_path(self):
+    @property
+    def db_path(self):
         return os.path.join(self.path, 'ca_manager.db')
 
     def _get_ssh_cas_dir(self):
