@@ -16,10 +16,12 @@ class SignRequest(object):
     def __init__(self, req_id):
         self.req_id = req_id
 
-    def get_name(self):
+    @property
+    def name(self):
         raise NotImplementedError()
 
-    def get_fields(self):
+    @property
+    def fields(self):
         raise NotImplementedError()
 
 
@@ -31,10 +33,12 @@ class UserSSHRequest(SignRequest, object):
         self.root_requested = root_requested
         self.key_data = key_data
 
-    def get_name(self):
+    @property
+    def name(self):
         return "User: %s [R:%d]" % (self.user_name, int(self.root_requested))
 
-    def get_fields(self):
+    @property
+    def fields(self):
         return [
             ("User name", self.user_name),
             ("Root access requested", 'yes' if self.root_requested else 'no')
@@ -50,10 +54,12 @@ class HostSSLRequest(SignRequest, object):
         self.host_name = host_name
         self.key_data = key_data
 
-    def get_name(self):
+    @property
+    def name(self):
         return "Hostname: %s" % self.host_name
 
-    def get_fields(self):
+    @property
+    def fields(self):
         return [
             ("Hostname", self.host_name)
         ]
@@ -67,10 +73,12 @@ class HostSSHRequest(SignRequest, object):
         self.host_name = host_name
         self.key_data = key_data
 
-    def get_name(self):
+    @property
+    def name(self):
         return "Hostname: %s" % self.host_name
 
-    def get_fields(self):
+    @property
+    def fields(self):
         return [
             ("Hostname", self.host_name)
         ]
