@@ -222,6 +222,22 @@ class CALookup(object):
         Create a new certification authority, insert
         it into the database
         """
+        ca_name, ca_type = ca_value
+        authority = None
+
+        if ca_type == 'ssh':
+            authority = SSHAuthority(ca_id, ca_name, self.ssh_ca_dir)
+        elif ca_type == 'ssl':
+            authority = SSLAuthority(ca_id, ca_name, self.ssl_ca_dir)
+        else:
+            raise ValueError('CA type is not supported')
+
+        authority.generate()
+
+        c = self.conn.cursor()
+        c.execute("""INSERT INTO cas VALUES (?, ?, ?)""",
+                (ca_id, ca_name, ca_type.lower()))
+        self.conn.commit()
 
 def init_manager(paths):
     """
