@@ -175,6 +175,12 @@ class CALookup(object):
     Proxy to interact with the database, get CA as element or as list
     """
     def __init__(self, ssh_ca_dir, ssl_ca_dir):
+        """
+        The connection attribute is setted by the CAManager instance
+        when used
+        """
+
+        self.conn = None
         self.ssh_ca_dir = ssh_ca_dir
         self.ssl_ca_dir = ssl_ca_dir
 
