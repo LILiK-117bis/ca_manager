@@ -81,7 +81,7 @@ class HostSSHRequest(SignRequest, object):
 class Authority(object):
     ca_type = None
 
-    def __init__(self, ca_id, name, path):
+    def __init__(self, ca_id, name, ca_dir):
         self.ca_id = ca_id
         self.name = name
         self.path = path
