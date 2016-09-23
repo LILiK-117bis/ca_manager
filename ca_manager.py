@@ -14,7 +14,7 @@ from certificate_requests import *
 from paths import *
 
 __doc__= """
-Define class to interact with certificate requests and Certification Authority
+Define classes to interact with certificate requests and Certification Authority
 """
 
 class CAManager(object):
