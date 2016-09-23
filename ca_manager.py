@@ -30,6 +30,7 @@ class CAManager(object):
         Enter a context block, connect to database
         """
         self.conn = sqlite3.connect(self.db_path)
+        self.ca.conn = self.conn
 
         return self
 
@@ -41,6 +42,7 @@ class CAManager(object):
             print(exc_type, exc_value)
             print(traceback)
 
+        self.ca.conn = None
         self.conn.close()
 
     @property
