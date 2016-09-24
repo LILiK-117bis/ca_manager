@@ -10,9 +10,8 @@ import shutil
 import sqlite3
 import tempfile
 
-from certificate_requests import *
-#from paths import *
-from local import *
+from paths import *
+from lookup import CALookup, RequestLookup
 
 __doc__= """
 Define classes to interact with certificate requests and Certification Authority
