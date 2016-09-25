@@ -16,6 +16,9 @@ class SignRequest(object):
     def __init__(self, req_id):
         self.req_id = req_id
 
+    def __repr__(self):
+        return ( "%s %s" % ( str(self.__class__.__name__), str(self.req_id) ) )
+
     @property
     def name(self):
         raise NotImplementedError()
@@ -104,6 +107,8 @@ class Authority(object):
     def sign(self, request):
         raise NotImplementedError()
 
+    def __repr__(self):
+        return ( "%s %s" % ( self.__class__.__name__, self.ca_type ) )
 
 class SSHAuthority(Authority):
     ca_type = 'ssh'
