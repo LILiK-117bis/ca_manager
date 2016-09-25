@@ -39,6 +39,19 @@ The server logs can be found at `/home/request/request_server.log`
 
 This is a shell for a user, the shell limits the commands to the one we are interested, like generating a SSH/SSL CA, signing keys.
 
+```
+# LILiK CA Manager
+
+Welcome to the certification authority shell.
+Type help or ? to list commands.
+	    
+(CA Manager)> ?
+
+Documented commands (type help <topic>):
+========================================
+describe_cas  gen_ca  help  ls_ca  ls_requests  quit  sign_request
+```
+
 ### Configuration
 
 The only configuration needed is the path where to operate, modifying te file `paths.py` is all is needed.
