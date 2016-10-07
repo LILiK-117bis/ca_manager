@@ -5,6 +5,7 @@ import os
 import os.path
 import sqlite3
 import subprocess
+import json
 
 from paths import *
 
@@ -27,6 +28,35 @@ class SignRequest(object):
     def fields(self):
         raise NotImplementedError()
 
+
+class RequestLoader(object):
+    """
+    Context manager that loads a request from a file
+    and return a Request type
+    """
+
+    def __init__(self, request_id):
+        self.request_id = request_id
+        self.request_dir = REQUESTS_PATH
+
+    @property
+    def path(self):
+        return os.path.join(self.request_dir, self.request_id)
+
+    def __enter__(self):
+        with open(self.path, 'r') as stream:
+            # read the json from a TextIO
+            # but let as_request handle 
+            # the conversion to a Python
+            # object
+            request_data = json.load(
+                stream,
+                )
+    
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is not None:
+            print(exc_type, exc_value)
+            print(traceback)
 
 class UserSSHRequest(SignRequest, object):
     def __init__(self, req_id, user_name, root_requested, key_data):
