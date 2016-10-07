@@ -59,48 +59,6 @@ class CAManager(object):
     def ssl_ca_dir(self):
         return os.path.join(self.path, 'ssl_cas')
 
-    def get_requests(self, ca_type=None):
-
-        req_objs = []
-
-        for request_name in os.listdir(REQUESTS_PATH):
-            request_path = os.path.join(REQUESTS_PATH, request_name)
-
-            with open(request_path, 'r') as stream:
-                req = json.load(stream)
-
-            if ca_type and not req['keyType'].startswith("%s_"%ca_type):
-                continue
-
-            if req['keyType'] == 'ssh_user':
-                user_name = req['userName']
-                root_requested = req['rootRequested']
-                key_data = req['keyData']
-
-                req_objs.append(
-                        UserSSHRequest(
-                            request_name, user_name, root_requested, key_data))
-            elif req['keyType'] == 'ssh_host':
-                host_name = req['hostName']
-                key_data = req['keyData']
-
-                req_objs.append(
-                        HostSSHRequest(
-                            request_name, host_name, key_data))
-            elif req['keyType'] == 'ssl_host':
-                host_name = req['hostName']
-                key_data = req['keyData']
-
-                req_objs.append(
-                        HostSSLRequest(
-                            request_name, host_name, key_data))
-
-        return req_objs
-
-    def drop_request(self, request):
-
-        os.unlink(os.path.join(REQUESTS_PATH, request.req_id))
-
 def init_manager(paths):
     """
     Initiate the manager by creating the
