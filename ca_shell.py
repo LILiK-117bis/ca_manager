@@ -35,6 +35,12 @@ class CAManagerShell(cmd.Cmd, object):
         'Show certification authority information: DESCRIBE_CAS'
         raise NotImplementedError
 
+    def do_drop_request(self, l):
+        'Delete a sign request: DROP_REQUEST'
+        request_id = l.split()[0]
+
+        del self.ca_manager.request[request_id]
+
     def do_gen_ca(self, l):
         'Generate a certification authority: GEN_CA type id name'
         argv = l.split()
