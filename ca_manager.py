@@ -93,13 +93,13 @@ def init_manager(paths):
         conn.commit()
         conn.close()
 
-def sign_request(ca_manager, request_name, authority_name):
+def sign_request(ca_manager, request_name, authority_id):
     request = None
 
     try:
-        authority = ca_manager.ca[authority_name]
+        authority = ca_manager.ca[authority_id]
     except IndexError:
-        print("Could not find CA '%d'" % choosen_ca)
+        print("Could not find CA '%d'" % authority_id)
         return
 
     requests = ca_manager.get_requests()
