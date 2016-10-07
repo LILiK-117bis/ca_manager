@@ -48,13 +48,9 @@ class RequestLoader(object):
 
     def __enter__(self):
         with open(self.path, 'r') as stream:
-            # read the json from a TextIO
-            # but let as_request handle 
-            # the conversion to a Python
-            # object
             request_data = json.load(
                 stream,
-                )
+            )
 
             requester = request_data.get('userName', None) or request_data.get('hostName', None)
             root_requested = request_data.get('rootRequested', False)
