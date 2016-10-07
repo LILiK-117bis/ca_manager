@@ -52,15 +52,15 @@ class RequestLoader(object):
                 stream,
             )
 
-            requester = request_data['request'].get('userName', None) or request_data.get('hostName', None)
-            root_requested = request_data['request'].get('rootRequested', False)
-            key_data = request_data['request'].get('keyData', None)
+            requester = request_data.get('userName', None) or request_data.get('hostName', None)
+            root_requested = request_data.get('rootRequested', False)
+            key_data = request_data.get('keyData', None)
 
             # attribute cannot be read from
             # json, must add after decoding
             request_id = self.request_id
 
-            values = request_data['request'].values()
+            values = request_data.values()
 
             if 'ssh_user' in values:
                 return UserSSHRequest(
