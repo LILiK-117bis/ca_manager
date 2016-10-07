@@ -55,6 +55,42 @@ class RequestLoader(object):
             request_data = json.load(
                 stream,
                 )
+
+            requester = request_data.get('userName', None) or request_data.get('hostName', None)
+            root_requested = request_data.get('rootRequested', False)
+            key_data = request_data.get('keyData', None)
+
+            # attribute cannot be read from
+            # json, must add after decoding
+            request_id = self.request_id
+
+            values = request_data['request'].values()
+
+            if 'ssh_user' in values:
+                return UserSSHRequest(
+                        request_id,
+                        requester,
+                        root_requested,
+                        key_data,
+                        )
+
+            elif 'ssh_host' in values:
+                return HostSSHRequest(
+                        request_id,
+                        requester,
+                        key_data,
+                        )
+
+            elif 'ssl_host' in values:
+                return HostSSLRequest(
+                        request_id,
+                        requester,
+                        key_data,
+                        )
+
+            else:
+                # ultimate error, cannot be decoded
+                return SignRequest(request_id)
     
     def __exit__(self, exc_type, exc_value, traceback):
         if exc_type is not None:
