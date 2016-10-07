@@ -108,9 +108,9 @@ class CAManagerShell(cmd.Cmd, object):
             print("usage: sign_request autority request")
         else:
             # [request_number, authority_number] =
-            authority_name = argv[0]
-            request_name = " ".join(argv[1:])
-            sign_request(self.ca_manager, request_name, authority_name)
+            authority_id = argv[0]
+            request_id = " ".join(argv[1:])
+            sign_request(self.ca_manager, request_id, authority_id)
 
     def complete_sign_request(self, text, line, begidx, endidx):
         results = ''
