@@ -62,7 +62,7 @@ def main():
         metarequest = json.loads(request_data)
         assert 'type' in metarequest
     except:
-        logger.info('"Type" key not found in request')
+        logger.info('"type" key not found in request')
         logger.info('Stopping shell')
         exit_bad('bad_json')
 
