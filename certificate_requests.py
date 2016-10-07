@@ -116,9 +116,6 @@ class UserSSHRequest(SignRequest, object):
             ("Root access requested", 'yes' if self.root_requested else 'no')
         ]
 
-    def __str__(self):
-        return ("%s %s" % (self.req_id, self.user_name))
-
 class HostSSLRequest(SignRequest, object):
     def __init__(self, req_id, host_name, key_data):
         super(HostSSLRequest, self).__init__(req_id)
@@ -135,8 +132,6 @@ class HostSSLRequest(SignRequest, object):
         return [
             ("Hostname", self.host_name)
         ]
-    def __str__(self):
-        return ("%s %s" % (self.req_id, self.host_name))
 
 class HostSSHRequest(SignRequest, object):
     def __init__(self, req_id, host_name, key_data):
@@ -154,9 +149,6 @@ class HostSSHRequest(SignRequest, object):
         return [
             ("Hostname", self.host_name)
         ]
-    def __str__(self):
-        return ("%s %s" % (self.req_id, self.host_name))
-
 
 class Authority(object):
     ca_type = None
