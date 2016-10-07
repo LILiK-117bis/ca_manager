@@ -72,9 +72,9 @@ class CALookup(object):
         ca_name, ca_type = ca_value
         authority = None
 
-        if ca_type == 'ssh':
+        if ca_type.lower() == 'ssh':
             authority = SSHAuthority(ca_id, ca_name, self.ssh_ca_dir)
-        elif ca_type == 'ssl':
+        elif ca_type.lower() == 'ssl':
             authority = SSLAuthority(ca_id, ca_name, self.ssl_ca_dir)
         else:
             raise ValueError('CA type is not supported')
