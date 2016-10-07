@@ -93,8 +93,9 @@ def init_manager(paths):
         conn.commit()
         conn.close()
 
-def sign_request(ca_manager, request_name, authority_id):
-    request = None
+def sign_request(ca_manager, request_id, authority_id):
+
+    authority, request = None, None
 
     try:
         authority = ca_manager.ca[authority_id]
@@ -102,13 +103,10 @@ def sign_request(ca_manager, request_name, authority_id):
         print("Could not find CA '%d'" % authority_id)
         return
 
-    requests = ca_manager.get_requests()
-
-    for i in requests:
-        if str(i) == request_name:
-            request = i
-    if request is None:
-        raise(IndexError)
+    try:
+        request = ca_manager.request[request_id]
+    except IndexError:
+        print("Could not find request '%d'" % request_id)
 
     h = hashlib.sha256()
     h.update(request.key_data.encode('utf-8'))
@@ -117,11 +115,11 @@ def sign_request(ca_manager, request_name, authority_id):
     print("You are about to sign this request with the following CA:")
     confirm = input('Proceed? (type yes)> ')
     if confirm != 'yes':
-        print ("user aborT")
+        print ("user abort")
         return
 
     cert_path = authority.sign(request)
-    ca_manager.drop_request(request)
+    del ca_manager.request[request_id]
 
     shutil.copy(cert_path, os.path.join(RESULTS_PATH, request.req_id))
 
