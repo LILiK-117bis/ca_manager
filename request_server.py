@@ -28,6 +28,7 @@ RESULTS_PATH = "/var/lib/ca_manager/results"
 
 def exit_good(response):
     logger.info('JSON accepted, send ok')
+    response['failed'] = False
     response['status'] = 'ok'
     print(json.dumps(response))
     sys.exit(0)
@@ -35,8 +36,10 @@ def exit_good(response):
 def exit_bad(reason):
     logger.info('JSON rejected, send error; error %s', reason)
     response = {
+        'failed': True,
         'status': 'error',
         'reason': reason,
+        'msg': reason,
     }
     print(json.dumps(response))
     sys.exit(0)
