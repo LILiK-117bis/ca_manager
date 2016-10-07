@@ -14,7 +14,7 @@ from certificate_requests import *
 from paths import *
 
 __doc__= """
-Define classes
+Define proxy classes
 """
 
 class CALookup(object):
