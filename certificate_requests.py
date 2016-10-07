@@ -28,6 +28,9 @@ class SignRequest(object):
     def fields(self):
         raise NotImplementedError()
 
+    @property
+    def path(self):
+        return os.path.join(REQUESTS_PATH, self.id)
 
 class RequestLoader(object):
     """
