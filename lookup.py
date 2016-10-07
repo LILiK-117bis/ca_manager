@@ -54,7 +54,7 @@ class CALookup(object):
 
         result = c.fetchone()
         if not result:
-            raise ValueError('Unknown CA "%s"' % ca_id)
+            raise IndexError('Unknown CA "%s"' % ca_id)
 
         ca_name, ca_type = result
 
