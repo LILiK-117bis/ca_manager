@@ -33,7 +33,27 @@ class CAManagerShell(cmd.Cmd, object):
 
     def do_describe_cas(self, l):
         'Show certification authority information: DESCRIBE_CAS'
-        raise NotImplementedError
+        ca_id = l.split()[0]
+
+        ca = self.ca_manager.ca[ca_id]
+
+        if ca:
+            ca_description = """
+            Certification authority: %s
+            --------------------------------------------------
+            CA type: %s
+            CA name: %s
+            """
+
+            ca_info = (
+                    ca_id,
+                    ca.__class__.__name__,
+                    ca.name,
+                    )
+
+            print(ca_description % ca_info)
+        else:
+            print("No CA found for id: '%s'" % request_id)
 
     def do_describe_request(self, l):
         'Show sign request information: DESCRIBE_REQUEST'
