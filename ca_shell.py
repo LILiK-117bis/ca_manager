@@ -35,6 +35,32 @@ class CAManagerShell(cmd.Cmd, object):
         'Show certification authority information: DESCRIBE_CAS'
         raise NotImplementedError
 
+    def do_describe_request(self, l):
+        'Show sign request information: DESCRIBE_REQUEST'
+        request_id = l.split()[0]
+
+        request = self.ca_manager.request[request_id]
+
+        if request:
+            request_description = """
+            Request %s
+            --------------------------------------------------
+            Request type: %s
+            %s
+            Key %s
+            """
+
+            request_info = (
+                    request_id,
+                    request.__class__.__name__,
+                    request.fields,
+                    request.key_data,
+                    )
+
+            print(request_description % request_info)
+        else:
+            print("No request found for id: '%s'" % request_id)
+
     def do_drop_request(self, l):
         'Delete a sign request: DROP_REQUEST'
         request_id = l.split()[0]
