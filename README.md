@@ -28,6 +28,20 @@ The input must be a JSON file, e.g
 
 the example is a `sign_request` for a ssh host certificate.
 
+```JSON
+{
+	"request": {
+		"keyType": "ssh_user",
+		"userName": "my_username",
+		"keyData": "ssh-ed25519 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa my_username@my_hostname",
+		"rootRequested": true
+	},
+	"type": "sign_request"
+}
+```
+
+This example is `sign_request` for a ssh user certificate with root access.
+
 The shell just output a json with `status`, `reason`, `failed` and `msg` keys.
 
 ```JSON
