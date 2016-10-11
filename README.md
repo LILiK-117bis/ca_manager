@@ -17,7 +17,7 @@ The input must be a JSON file, e.g
 
 ```JSON
 {
-	{
+	"request": {
 		"keyType": "ssh_host",
 		"hostName": "my_new_server",
 		"keyData": "ssh-ed25519 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa root@my_new_server"
