@@ -9,6 +9,8 @@ This collection of tools is our take on managing a CA, signing SSH keys and cert
 
 This is a shell for a user, the shell only reads the input from the user and return a JSON, this user can be used with Ansible to request and retrive certificates.
 
+The server logs can be found at `/home/request/request_server.log`
+
 The input must be a JSON file, e.g
 
 ```JSON
