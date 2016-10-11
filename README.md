@@ -28,16 +28,18 @@ The input must be a JSON file, e.g
 
 the example is a `sign_request` for a ssh host certificate.
 
-The shell just output a json with `status` and `reason` keys.
+The shell just output a json with `status`, `reason`, `failed` and `msg` keys.
 
 ```JSON
 {
+	"failed" : ...,
+	"msg" : ...,
 	"reason" : ...,
 	"status" : ...
 }
 ```
 
-The server logs can be found at `/home/request/request_server.log`
+The keys `failed` and `msg` are only requested to comply with ansible.
 
 #### `ca_sheel.py`
 
