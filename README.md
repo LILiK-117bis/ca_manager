@@ -11,6 +11,8 @@ This is a shell for a user, the shell only reads the input from the user and ret
 
 The server logs can be found at `/home/request/request_server.log`
 
+##### sign_request
+
 The input must be a JSON file, e.g
 
 ```JSON
