@@ -149,6 +149,7 @@ class HostSSHRequest(SignRequest, object):
 
 class Authority(object):
     ca_type = None
+    request_allowed = []
 
     def __init__(self, ca_id, name, ca_dir):
         self.ca_id = ca_id
@@ -171,6 +172,8 @@ class Authority(object):
 class SSHAuthority(Authority):
     ca_type = 'ssh'
 
+    request_allowed = [ UserSSHRequest, HostSSHRequest, ]
+
     key_algorithm = 'ed25519'
 
     user_validity = '+52w'
@@ -191,7 +194,7 @@ class SSHAuthority(Authority):
 
     def sign(self, request):
 
-        assert type(request) in [UserSSHRequest, HostSSHRequest]
+        assert type(request) in self.request_allowed
 
         pub_key_path = os.path.join(OUTPUT_PATH, request.req_id + '.pub')
         cert_path = os.path.join(OUTPUT_PATH, request.req_id + '-cert.pub')
@@ -207,7 +210,7 @@ class SSHAuthority(Authority):
         ca_private_key = self.path
 
         if type(request) == UserSSHRequest:
-            login_names = [request.user_name]
+            login_names = [ request.user_name, ]
             if request.root_requested:
                 login_names.append('root')
 
@@ -232,6 +235,7 @@ class SSHAuthority(Authority):
 
 class SSLAuthority(Authority):
     ca_type = 'ssl'
+    request_allowed = [ HostSSLRequest, ]
 
     ca_key_algorithm = 'des3'
     key_length = '4096'
