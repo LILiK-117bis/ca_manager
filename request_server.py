@@ -14,9 +14,9 @@ Procedure to spawn a shell for automation, used by Ansible
 logfile= '/home/request/request_server.log'
 
 logging.basicConfig(
-        filename= logfile,
-        format= '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        level= logging.INFO,
+        filename = logfile,
+        format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level = logging.INFO,
         )
 
 logger = logging.getLogger('request_server')
