@@ -30,7 +30,8 @@ class SignRequest(object):
 
     @property
     def path(self):
-        return os.path.join(REQUESTS_PATH, self.id)
+        return os.path.join(REQUESTS_PATH, self.req_id)
+
 
 class RequestLoader(object):
     """
