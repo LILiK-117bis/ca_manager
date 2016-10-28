@@ -136,3 +136,25 @@ class RequestLookup(object):
     @property
     def ssl(self):
         pass
+
+class CertificateLookup(object):
+    """
+    Proxy to interact with certificates
+    """
+    def __iter__(self):
+        self.cert_dir = OUTPUT_PATH
+
+    def __getitem__(self, certificate_id):
+        """
+        Get a specific certificate from disk
+        """
+        if not Certificate(certificate_id):
+            raise IndexError
+
+        return Certificate(certificate_id)
+
+    def __iter__(self):
+        """
+        Iterate over all certificate request in OUTPUT_PATH
+        """
+        pass
