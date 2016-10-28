@@ -10,7 +10,8 @@ import shutil
 import sqlite3
 import tempfile
 
-from certificate_requests import *
+from authority import *
+from request import *
 from paths import *
 
 __doc__= """
