@@ -11,6 +11,7 @@ import sqlite3
 import tempfile
 
 from authority import *
+from certificate import *
 from request import *
 from paths import *
 
