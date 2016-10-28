@@ -123,13 +123,11 @@ class RequestLookup(object):
         """
         Get a specific certificate request
         """
-        target_request_path = os.path.join(self.request_dir, request_id)
-
-        if os.path.exists(target_request_path):
-            with RequestLoader(request_id) as request:
-                return request
-        else:
+        if not SignRequest(request_id):
             raise IndexError
+
+        with RequestLoader(request_id) as request:
+            return request
 
     @property
     def ssh(self):
