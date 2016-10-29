@@ -161,7 +161,7 @@ class SSLAuthority(Authority):
     def sign(self, request):
         OUTPUT_PATH
 
-        assert type(request) in [HostSSLRequest]
+        assert type(request) in self.request_allowed
 
         pub_key_path = os.path.join(OUTPUT_PATH, request.req_id + '.pub')
         cert_path = os.path.join(OUTPUT_PATH, request.req_id + '-cert.pub')
