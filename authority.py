@@ -62,8 +62,8 @@ class SSHAuthority(Authority):
 
         assert type(request) in self.request_allowed
 
-        pub_key_path = os.path.join(OUTPUT_PATH, request.req_id + '.pub')
-        cert_path = os.path.join(OUTPUT_PATH, request.req_id + '-cert.pub')
+        pub_key_path = request.destination
+        cert_path = Certificate(request.req_id).path
 
         with open(self.path + '.serial', 'r') as stream:
             next_serial = int(stream.read())
