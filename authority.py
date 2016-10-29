@@ -41,10 +41,9 @@ class Authority(object):
         raise NotImplementedError()
 
     def __repr__(self):
-        return ( "%s %s" % ( self.__class__.__name__, self.ca_type ) )
+        return ( "%s %s" % ( self.__class__.__name__, self.ca_id ) )
 
 class SSHAuthority(Authority):
-    ca_type = 'ssh'
 
     request_allowed = [ UserSSHRequest, HostSSHRequest, ]
 
