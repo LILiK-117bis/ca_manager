@@ -15,7 +15,6 @@ Module of classes to handle certificate requests
 """
 
 class Authority(object):
-    ca_type = None
     request_allowed = []
 
     def __init__(self, ca_id, ca_dir = MANAGER_PATH):
@@ -134,7 +133,6 @@ class SSHAuthority(Authority):
         return cert_path
 
 class SSLAuthority(Authority):
-    ca_type = 'ssl'
     request_allowed = [ HostSSLRequest, ]
 
     ca_key_algorithm = 'des3'
