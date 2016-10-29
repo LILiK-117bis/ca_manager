@@ -21,72 +21,33 @@ Define proxy classes
 
 class CALookup(object):
     """
-    Proxy to interact with the database, get CA as element or as list
+    Proxy to interact with authorities
     """
-    def __init__(self, ssh_ca_dir, ssl_ca_dir):
+
+    allowed_auth = [
+            SSHAuthority,
+            SSLAuthority,
+            ]
+
+    def __init__(self):
+
+        self.path = MANAGER_PATH
+
         """
-        The connection attribute is setted by the CAManager instance
-        when used
         """
-
-        self.conn = None
-        self.ssh_ca_dir = ssh_ca_dir
-        self.ssl_ca_dir = ssl_ca_dir
-
-    def __iter__(self):
-        c = self.conn.cursor()
-
-        c.execute("""SELECT id, name, type FROM cas""")
-
-        return iter(c.fetchall())
-
-    def __delitem__(self, ca_id):
-        """
-        Delete a specific certification authority from the database
-        """
-        c = self.conn.cursor()
-        c.execute("""DELETE FROM cas WHERE id = ?""", (ca_id, ))
 
     def __getitem__(self, ca_id):
+
+
+
+
+
         """
-        Get a specific certification authority from the database
         """
-        c = self.conn.cursor()
-        c.execute("""SELECT name, type FROM cas WHERE id = ?""", (ca_id, ))
 
-        result = c.fetchone()
-        if not result:
-            raise IndexError('Unknown CA "%s"' % ca_id)
-
-        ca_name, ca_type = result
-
-        if ca_type.lower() == 'ssh':
-            return SSHAuthority(ca_id, ca_name, self.ssh_ca_dir)
-
-        elif ca_type.lower() == 'ssl':
-            return SSLAuthority(ca_id, ca_name, self.ssl_ca_dir)
-
-    def __setitem__(self, ca_id, ca_value):
-        """
-        Create a new certification authority, insert
-        it into the database
-        """
-        ca_name, ca_type = ca_value
-        authority = None
-
-        if ca_type.lower() == 'ssh':
-            authority = SSHAuthority(ca_id, ca_name, self.ssh_ca_dir)
-        elif ca_type.lower() == 'ssl':
-            authority = SSLAuthority(ca_id, ca_name, self.ssl_ca_dir)
-        else:
             raise ValueError('CA type is not supported')
 
-        authority.generate()
 
-        c = self.conn.cursor()
-        c.execute("""INSERT INTO cas VALUES (?, ?, ?)""",
-                (ca_id, ca_name, ca_type.lower()))
-        self.conn.commit()
 
 class RequestLookup(object):
     """
