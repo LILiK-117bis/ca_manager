@@ -49,6 +49,16 @@ class SSHAuthority(Authority):
     user_validity = '+52w'
     host_validity = '+52w'
 
+    def __bool__(self):
+        """
+        For a SSH Authority we only need a private-public key couple,
+        moreover we request to have the next serial number
+        """
+        keys_couple_exist = os.path.exists(self.path) and os.path.exists(self.path + '.pub')
+        serial_exist = os.path.exists(self.path + '.serial')
+
+        return keys_couple_exist and serial_exist
+
     def generate(self):
         if os.path.exists(self.path):
             raise ValueError("A CA with the same id and type already exists")
