@@ -38,9 +38,16 @@ class CALookup(object):
 
     def __getitem__(self, ca_id):
 
+        if SSHAuthority(ca_id):
 
+            return SSHAuthority(ca_id)
 
+        elif SSLAuthority(ca_id):
 
+            return SSLAuthority(ca_id)
+
+        else:
+            raise IndexError('Unknown CA "%s"' % ca_id)
 
         """
         """
