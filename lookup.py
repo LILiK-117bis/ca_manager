@@ -49,12 +49,22 @@ class CALookup(object):
         else:
             raise IndexError('Unknown CA "%s"' % ca_id)
 
+    def __setitem__(self, ca_id, authority_class):
         """
+        Create a new certification authority
         """
+
+        if authority_class not in self.allowed_auth:
 
             raise ValueError('CA type is not supported')
 
+        else:
 
+            if not authority_class(ca_id):
+                authority_class(ca_id).generate()
+
+            else:
+                raise ValueError('CA %s already exists' % ca_id)
 
 class RequestLookup(object):
     """
