@@ -18,9 +18,8 @@ class Authority(object):
     ca_type = None
     request_allowed = []
 
-    def __init__(self, ca_id, name, ca_dir):
+    def __init__(self, ca_id, ca_dir = MANAGER_PATH):
         self.ca_id = ca_id
-        self.name = name
         self.ca_dir = ca_dir
 
     def __bool__(self):
@@ -48,6 +47,11 @@ class SSHAuthority(Authority):
 
     user_validity = '+52w'
     host_validity = '+52w'
+
+    def __init__(self, ca_id):
+        ssh_ca_dir = os.path.join(MANAGER_PATH, 'ssh_ca')
+
+        super(SSHAuthority, self).__init__(ca_id, ssh_ca_dir)
 
     def __bool__(self):
         """
@@ -132,6 +136,11 @@ class SSLAuthority(Authority):
     key_algorithm = 'sha256'
     ca_validity = '365'
     cert_validity = '365'
+
+    def __init__(self, ca_id):
+        ssl_ca_dir = os.path.join(MANAGER_PATH, 'ssl_ca')
+
+        super(SSLAuthority, self).__init__(ca_id, ssl_ca_dir)
 
     def generate(self):
         if os.path.exists(self.path):
