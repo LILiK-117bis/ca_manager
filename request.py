@@ -20,6 +20,9 @@ class SignRequest(object):
     def __repr__(self):
         return ( "%s %s" % ( str(self.__class__.__name__), str(self.req_id) ) )
 
+    def __bool__(self):
+        return os.path.exists(self.path)
+
     @property
     def name(self):
         raise NotImplementedError()
