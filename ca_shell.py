@@ -11,7 +11,7 @@ __doc__= """
         """
 
 class CAManagerShell(cmd.Cmd, object):
-    intro= """# LILiK CA Manager\n
+    intro= """# LILiK CA Manager #
     Welcome to the certification authority shell.
     Type help or ? to list commands.
     """
