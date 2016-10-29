@@ -4,6 +4,7 @@
 import cmd
 import sys
 
+from authority import SSHAuthority, SSLAuthority
 from ca_manager import sign_request
 
 __doc__= """
@@ -87,44 +88,17 @@ class CAManagerShell(cmd.Cmd, object):
 
         del self.ca_manager.request[request_id]
 
-    def do_gen_ca(self, l):
-        'Generate a certification authority: GEN_CA type id name'
+    def do_gen_ssh(self, l):
+        'Generate a SSH Certification authority'
         argv = l.split()
-        argc = len(argv)
-        try:
-            if argc > 3:
-                raise(ValueError)
+        ca_id = argv[0]
+        self.ca_manager.ca[ca_id] = SSHAuthority
 
-            if argc < 1:
-                ca_type = input("CA type> ")
-            else:
-                ca_type = argv[0]
-
-            if argc < 2:
-                ca_id = input("CA unique id> ")
-            else:
-                ca_name = argv[1]
-
-            if argc < 3:
-                ca_name = input("CA human-readable name> ")
-            else:
-                ca_name = argv[2]
-
-        except ValueError:
-            print("Malformed input: %s" % l)
-            return
-
-        self.ca_manager.ca[ca_id] = (ca_name, ca_type)
-
-    def complete_gen_ca(self, text, line, begidx, endidx):
-
-        results = ''
-
-        argc = len(("%send"%line).split())
-
-        if argc == 2:
-            results = [a for a in ["ssl", "ssh"] if a.startswith(text)]
-        return results
+    def do_gen_ssl(self, l):
+        'Generate a SSL Certification authority'
+        argv = l.split()
+        ca_id = argv[0]
+        self.ca_manager.ca[ca_id] = SSLAuthority
 
     def do_sign_request(self, l):
         'Sign a request using a CA: SIGN_REQUEST ca_id request_id'
