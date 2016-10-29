@@ -81,6 +81,10 @@ class SSHAuthority(Authority):
             with open(self.path + '.serial', 'w') as stream:
                 stream.write(str(0))
 
+            pickled_path = os.path.join(MANAGER_PATH, self.ca_id)
+            with open(pickled_path, 'wb') as out:
+                pickle.dump(self, out)
+
         else:
             raise ValueError('A CA with the same id and type already exists')
 
