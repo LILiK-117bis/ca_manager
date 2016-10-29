@@ -11,7 +11,7 @@ import sqlite3
 import tempfile
 
 from paths import *
-from lookup import CALookup, RequestLookup
+from lookup import CALookup, RequestLookup, CertificateLookup
 
 __doc__= """
 Define classes to interact with certificate requests and Certification Authority
@@ -26,6 +26,7 @@ class CAManager(object):
         self.path = path
         self.ca = CALookup(self.ssh_ca_dir, self.ssl_ca_dir)
         self.request = RequestLookup()
+        self.certificate = CertificateLookup()
 
     def __enter__(self):
         """
