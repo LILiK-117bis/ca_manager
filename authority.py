@@ -23,6 +23,9 @@ class Authority(object):
         self.name = name
         self.ca_dir = ca_dir
 
+    def __bool__(self):
+        return os.path.exists(self.path)
+
     @property
     def path(self):
         return os.path.join(self.ca_dir, self.ca_id)
