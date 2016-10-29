@@ -69,7 +69,7 @@ def init_manager(paths):
     """
     db_path = os.path.join(paths[0], 'ca_manager.db')
 
-    directories = ['ssh_cas', 'ssl_cas']
+    directories = ['ssh_cas', 'ssl_cas', 'pickled_cas',]
 
     # ensure the directories needed by CAManager
     # exists
