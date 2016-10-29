@@ -35,6 +35,9 @@ class SignRequest(object):
     def path(self):
         return os.path.join(REQUESTS_PATH, self.req_id)
 
+    @property
+    def destination(self):
+        return os.path.join(OUTPUT_PATH, self.req_id + '.pub')
 
 class RequestLoader(object):
     """
