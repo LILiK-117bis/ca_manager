@@ -24,7 +24,7 @@ class CAManager(object):
 
     def __init__(self, path):
         self.path = path
-        self.ca = CALookup(self.ssh_ca_dir, self.ssl_ca_dir)
+        self.ca = CALookup()
         self.request = RequestLookup()
         self.certificate = CertificateLookup()
 
