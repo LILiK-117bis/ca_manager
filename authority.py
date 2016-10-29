@@ -54,7 +54,7 @@ class SSHAuthority(Authority):
     host_validity = '+52w'
 
     def __init__(self, ca_id):
-        ssh_ca_dir = os.path.join(MANAGER_PATH, 'ssh_ca')
+        ssh_ca_dir = os.path.join(MANAGER_PATH, 'ssh_cas')
 
         super(SSHAuthority, self).__init__(ca_id, ssh_ca_dir)
 
@@ -86,9 +86,8 @@ class SSHAuthority(Authority):
             with open(self.path + '.serial', 'w') as stream:
                 stream.write(str(0))
 
-            pickled_path = os.path.join(MANAGER_PATH, self.ca_id)
-            with open(pickled_path, 'wb') as out:
-                pickle.dump(self, out)
+            super(SSHAuthority, self).generate()
+
 
         else:
             raise ValueError('A CA with the same id and type already exists')
