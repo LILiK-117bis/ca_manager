@@ -93,7 +93,7 @@ class SSHAuthority(Authority):
         with open(self.path + '.serial', 'w') as stream:
             stream.write(str(next_serial + 1))
 
-        with open(pub_key_path, 'w') as stream:
+        with open(request.destination, 'w') as stream:
             stream.write(request.key_data)
 
         ca_private_key = self.path
