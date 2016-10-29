@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import os.path
+import pickle
 import shutil
 import sqlite3
 import tempfile
@@ -33,8 +34,19 @@ class CALookup(object):
 
         self.path = MANAGER_PATH
 
-        """
-        """
+    def __iter__(self):
+        authorities_path = os.path.join(self.path, 'pickled_cas')
+
+        auth = []
+
+        for authority in os.listdir(authorities_path):
+
+            pickle_path = os.path.join(self.path, 'pickled_cas', authority)
+
+            with open(pickle_path, 'rb') as stream:
+                auth.append(pickle.load(stream))
+
+        return iter(auth)
 
     def __getitem__(self, ca_id):
 
