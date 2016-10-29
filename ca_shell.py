@@ -116,44 +116,22 @@ class CAManagerShell(cmd.Cmd, object):
                 # print available requests
                 print("Available request")
                 print_available_requests(self.ca_manager)
-
-            elif argc == 1:
-                ca_type = None
-                ca_id = argv[0]
-                try:
-                    ca_type = self.ca_manager.ca[ca_id].ca_type
-                except Exception as e:
-                    print ("Error: %s"%e)
-                    return
-                # print available requests
-                print("Available request for CA %s (type %s)" % (ca_id, ca_type))
-                print_available_requests(self.ca_manager, ca_type)
-
-            print("==================")
-            print("usage: sign_request autority request")
         else:
             authority_id, request_id  = argv[0], argv[1]
 
             sign_request(self.ca_manager, request_id, authority_id)
 
     def complete_sign_request(self, text, line, begidx, endidx):
-        results = ''
-        #too much magic
-        argc = len(( "%send" % line ).split() )
 
-        if argc == 2:
-            results = [a[0] for a in self.ca_manager.ca if a[0].startswith(text)]
-        elif argc == 3:
-            ca_type = None
-            try:
-                ca_id = line.split()[1]
-                ca_type = self.ca_manager.ca[ca_id].ca_type
-            except Exception as e:
-                print ("Error: %s"%e)
-                return
+        ca_results = [
+                a for a in self.ca_manager.ca if a.ca_id.startswith(text)
+                ]
 
-            results = [a for a in self.ca_manager.request[ca_type] if str(a).startswith(text)]
-        return results
+        req_result = [
+                a for a in self.ca_manager.request if a.req_id.startswith(text)
+                ]
+
+        return ' '.join(results)
 
     def complete(self, text, state):
         results = super().complete(text, state)
