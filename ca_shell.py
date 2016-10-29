@@ -168,13 +168,8 @@ class CAManagerShell(cmd.Cmd, object):
 
 def print_available_authorities(ca_manager):
     for i, ca_item  in enumerate(ca_manager.ca):
-        (ca_id, ca_name, ca_type) = ca_item
-        print("- %d : [%3s] %-15s (%s)" % (i ,ca_type, ca_id, ca_name))
-    else:
-        print("No available CA")
+        print("- %d : %s" % (i , ca_item))
 
 def print_available_requests(ca_manager):
     for i, request in enumerate(ca_manager.request):
         print("- %d : %s" % (i, request))
-    else:
-        print("No requests")
