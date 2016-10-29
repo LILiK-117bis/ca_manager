@@ -117,7 +117,7 @@ class RequestLookup(object):
         """
         Delete a specific certificate request
         """
-        os.unlink(SignRequest(request_id).path))
+        os.unlink(SignRequest(request_id).path)
 
     def __getitem__(self, request_id):
         """
