@@ -7,6 +7,7 @@ import sqlite3
 import subprocess
 
 from paths import *
+from certificate import Certificate
 from request import UserSSHRequest, HostSSHRequest, HostSSLRequest
 
 __doc__= """
