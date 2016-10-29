@@ -60,16 +60,25 @@ class SSHAuthority(Authority):
         return keys_couple_exist and serial_exist
 
     def generate(self):
-        if os.path.exists(self.path):
-            raise ValueError("A CA with the same id and type already exists")
+        """
+        Generate a SSHAuthority if the files associated
+        do not exists
+        """
+        # check if the public key exists
+        if not self:
+            # let ssh-keygen do its job
+            subprocess.check_output(['ssh-keygen',
+                '-f', self.path,
+                '-t', self.key_algorithm,
+                '-C', self.name])
 
-        subprocess.check_output(['ssh-keygen',
-            '-f', self.path,
-            '-t', self.key_algorithm,
-            '-C', self.name])
+            # write the serial file with a value of
+            # 0 for first certificate
+            with open(self.path + '.serial', 'w') as stream:
+                stream.write(str(0))
 
-        with open(self.path + '.serial', 'w') as stream:
-            stream.write(str(0))
+        else:
+            raise ValueError('A CA with the same id and type already exists')
 
 
     def sign(self, request):
