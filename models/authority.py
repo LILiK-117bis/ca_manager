@@ -7,8 +7,8 @@ import pickle
 import subprocess
 
 from paths import *
-from certificate import Certificate
-from request import UserSSHRequest, HostSSHRequest, HostSSLRequest
+from models.certificate import Certificate
+from models.request import UserSSHRequest, HostSSHRequest, HostSSLRequest
 
 __doc__= """
 Module of classes to handle certificate requests

@@ -11,9 +11,9 @@ import shutil
 import sqlite3
 import tempfile
 
-from authority import *
-from certificate import *
-from request import *
+from models.authority import *
+from models.certificate import *
+from models.request import *
 from paths import *
 
 __doc__= """

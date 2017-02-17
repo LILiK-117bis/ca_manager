@@ -4,7 +4,7 @@
 import cmd
 import sys
 
-from authority import SSHAuthority, SSLAuthority
+from models.authority import SSHAuthority, SSLAuthority
 from ca_manager import sign_request
 
 __doc__= """
