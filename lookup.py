@@ -11,14 +11,13 @@ import shutil
 import sqlite3
 import tempfile
 
-from models.authority import *
-from models.certificate import *
-from models.request import *
-from paths import *
+from models.ssh import SSHAuthority, UserSSHRequest, HostSSHRequest
+from models.ssl import SSLAuthority, HostSSLRequest
 
-__doc__= """
-Define proxy classes
-"""
+from models.certificate import Certificate
+from models.request import SignRequest
+
+from paths import *
 
 class CALookup(object):
     """
@@ -91,17 +90,11 @@ class RequestLookup(object):
         Iterate over all certificate request in REQUEST_PATH
         """
 
-        req_objs = []
-
         for request_id in os.listdir(self.request_dir):
             """
             request_id is formatted as uuid
             """
-            with RequestLoader(request_id) as request:
-
-                req_objs.append(request)
-
-        return iter(req_objs)
+            yield self[request_id]
 
     def __delitem__(self, request_id):
         """
