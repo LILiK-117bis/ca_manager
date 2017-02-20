@@ -81,7 +81,7 @@ class CAManagerShell(cmd.Cmd):
 
             print(request_description % request_info)
         else:
-            print("No request found for id: '%s'" % request_id)
+            print('No request found for id: "%s"' % request_id)
 
     def do_drop_request(self, l):
         'Delete a sign request: DROP_REQUEST'
