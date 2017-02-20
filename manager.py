@@ -113,7 +113,7 @@ def sign_request(ca_manager, request_id, authority_id):
 
 
 if __name__ == '__main__':
-    from ca_shell import CAManagerShell
+    from shell import CAManagerShell
 
     init_manager([
         MANAGER_PATH,
@@ -123,6 +123,6 @@ if __name__ == '__main__':
         ])
 
 
-    with CAManager(MANAGER_PATH) as ca_manager:
+    ca_manager = CAManager(MANAGER_PATH)
 
-        CAManagerShell(ca_manager).cmdloop()
+    CAManagerShell(ca_manager).cmdloop()
