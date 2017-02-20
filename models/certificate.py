@@ -1,18 +1,45 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from peewee import *
+
 import os
 import json
 
+from models.authority import Authority
 from paths import *
 
-__doc__= """
-Module of classes to handle certificate requests
-"""
 
-class Certificate(object):
-    def __init__(self, cert_id):
-        self.cert_id = cert_id
+class Certificate(Model):
+    """
+    """
+
+    signed_by = ForeignKeyField(
+            Authority,
+            related_name = 'signed_certificates',
+            )
+
+    cert_id = CharField(
+                index = True,
+                unique = True,
+                help_text = 'id shared with the sign request',
+                )
+
+    date_issued = DateTimeField(
+                help_text = 'certificate\'s issue date',
+                )
+
+    receiver = CharField(
+                help_text = 'hostname or list of user for this certificate',
+                )
+
+    serial_number = IntegerField(
+                help_text = 'certificate\'s progressive number',
+                )
+
+    validity_interval = CharField(
+                help_text = 'how long will the certificate be valid',
+                )
 
     def __repr__(self):
         return ( "%s %s" % ( str(self.__class__.__name__), str(self.cert_id) ) )
