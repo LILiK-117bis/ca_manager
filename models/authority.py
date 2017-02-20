@@ -12,12 +12,13 @@ __doc__= """
 Module of classes to handle certificate requests
 """
 
-class Authority(object):
+class Authority(Model):
     request_allowed = []
 
-    def __init__(self, ca_id, ca_dir = MANAGER_PATH):
-        self.ca_id = ca_id
-        self.ca_dir = ca_dir
+    # data stored in the database
+    ca_id = CharField()
+    name = CharField()
+    serial = IntegerField()
 
     def __bool__(self):
         return os.path.exists(self.path)
