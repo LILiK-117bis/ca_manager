@@ -30,29 +30,10 @@ class CAManager(object):
 
     def __init__(self, path):
         self.path = path
+
         self.ca = CALookup()
         self.request = RequestLookup()
         self.certificate = CertificateLookup()
-
-    def __enter__(self):
-        """
-        Enter a context block, connect to database
-        """
-        self.conn = sqlite3.connect(self.db_path)
-        self.ca.conn = self.conn
-
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        """
-        Exit a context block, disconnect from database
-        """
-        if exc_type is not None:
-            print(exc_type, exc_value)
-            print(traceback)
-
-        self.ca.conn = None
-        self.conn.close()
 
     @property
     def db_path(self):
