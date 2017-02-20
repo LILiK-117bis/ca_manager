@@ -100,52 +100,6 @@ class RequestLoader(object):
             print(exc_type, exc_value)
             print(traceback)
 
-class UserSSHRequest(SignRequest, object):
-    def __init__(self, req_id, user_name, root_requested, key_data):
-        super(UserSSHRequest, self).__init__(req_id)
-
-        self.user_name = user_name
-        self.root_requested = root_requested
-        self.key_data = key_data
-
-    @property
-    def name(self):
-        return "User: %s [R:%d]" % (self.user_name, int(self.root_requested))
-
-    @property
-    def fields(self):
-        return [
-            ("User name", self.user_name),
-            ("Root access requested", 'yes' if self.root_requested else 'no')
-        ]
-
-class HostSSLRequest(SignRequest, object):
-    def __init__(self, req_id, host_name, key_data):
-        super(HostSSLRequest, self).__init__(req_id)
-
-        self.host_name = host_name
-        self.key_data = key_data
-
-    @property
-    def name(self):
-        return "Hostname: %s" % self.host_name
-
-    @property
-    def fields(self):
-        return [
-            ("Hostname", self.host_name)
-        ]
-
-class HostSSHRequest(SignRequest, object):
-    def __init__(self, req_id, host_name, key_data):
-        super(HostSSHRequest, self).__init__(req_id)
-
-        self.host_name = host_name
-        self.key_data = key_data
-
-    @property
-    def name(self):
-        return "Hostname: %s" % self.host_name
 
     @property
     def fields(self):
