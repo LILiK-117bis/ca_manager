@@ -28,12 +28,7 @@ class Authority(Model):
         return os.path.join(self.ca_dir, self.ca_id)
 
     def generate(self):
-        """
-        Leave a dump of this class in the MANAGER_PATH
-        """
-        pickled_path = os.path.join(MANAGER_PATH, 'pickled_cas', self.ca_id)
-        with open(pickled_path, 'wb') as out:
-                pickle.dump(self, out)
+        raise NotImplementedError()
 
     def sign(self, request):
         raise NotImplementedError()
