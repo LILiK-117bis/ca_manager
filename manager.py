@@ -23,6 +23,8 @@ __doc__= """
 Define classes to interact with certificate requests and Certification Authority
 """
 
+db = SqliteDatabase(os.path.join(MANAGER_PATH, 'ca_manager.db'))
+
 class CAManager(object):
     """
     Middleware to interact with ssh-keygen
@@ -54,8 +56,6 @@ def init_manager(paths):
 
     Create a database to store the information
     """
-    db_path = os.path.join(paths[0], 'ca_manager.db')
-
     directories = ['ssh_cas', 'ssl_cas', ]
 
     # ensure the directories needed by CAManager
@@ -73,13 +73,20 @@ def init_manager(paths):
             os.mkdir(dirpath)
 
     # ensure the database exists
-    # in MANAGER_PATH
-    if not os.path.exists(db_path):
-        conn = sqlite3.connect(db_path)
-        c = conn.cursor()
-        c.execute("""CREATE TABLE cas (id text, name text, type text)""")
-        conn.commit()
-        conn.close()
+    # in MANAGER_PATH and create the
+    # tables for Authority and Certificate
+    db.connect()
+
+    models_required = [
+        SSHAuthority,
+        SSLAuthority,
+        Certificate,
+    ]
+
+    db.create_tables(
+        models_required,
+        safe = True,
+        )
 
 def sign_request(ca_manager, request_id, authority_id):
 
