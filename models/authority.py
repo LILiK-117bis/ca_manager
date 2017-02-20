@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from peewee import *
+
 import os
 import os.path
-import pickle
-import subprocess
 
 from paths import *
-from models.certificate import Certificate
-from models.request import UserSSHRequest, HostSSHRequest, HostSSLRequest
 
 __doc__= """
 Module of classes to handle certificate requests
