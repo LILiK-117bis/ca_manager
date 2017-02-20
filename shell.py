@@ -4,14 +4,16 @@
 import cmd
 import sys
 
-from models.authority import SSHAuthority, SSLAuthority
-from ca_manager import sign_request
+from models.ssh import SSHAuthority
+from models.ssl import SSLAuthority
+
+from manager import sign_request
 
 __doc__= """
         Class to make a shell and interact with the user
         """
 
-class CAManagerShell(cmd.Cmd, object):
+class CAManagerShell(cmd.Cmd):
     intro= """# LILiK CA Manager #
     Welcome to the certification authority shell.
     Type help or ? to list commands.
