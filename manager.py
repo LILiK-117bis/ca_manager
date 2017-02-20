@@ -7,11 +7,17 @@ import json
 import os
 import os.path
 import shutil
-import sqlite3
 import tempfile
 
-from paths import *
+from peewee import *
+
 from lookup import CALookup, RequestLookup, CertificateLookup
+
+from models.ssh import SSHAuthority
+from models.ssl import SSLAuthority
+from models.certificate import Certificate
+
+from paths import *
 
 __doc__= """
 Define classes to interact with certificate requests and Certification Authority
