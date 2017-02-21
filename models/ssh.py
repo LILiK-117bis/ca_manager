@@ -88,13 +88,6 @@ class SSHAuthority(Authority):
                 '-t', self.key_algorithm,
                 '-C', self.name])
 
-            # write the serial file with a value of
-            # 0 for first certificate
-            with open(self.path + '.serial', 'w') as stream:
-                stream.write(str(0))
-
-            super(SSHAuthority, self).generate()
-
         else:
             raise ValueError('A CA with the same id already exists')
 
