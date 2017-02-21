@@ -20,7 +20,7 @@ from models.request import SignRequest
 
 from paths import *
 
-class CALookup(object):
+class CALookup:
     """
     Proxy to interact with authorities
     """
@@ -55,7 +55,7 @@ class CALookup(object):
             raise IndexError('Unknown CA "%s"' % ca_id)
 
 
-class RequestLookup(object):
+class RequestLookup:
     """
     Proxy to interact with the requests
     """
@@ -128,7 +128,7 @@ class RequestLookup(object):
     def ssl(self):
         pass
 
-class CertificateLookup(object):
+class CertificateLookup:
     """
     Proxy to interact with certificates
     """
