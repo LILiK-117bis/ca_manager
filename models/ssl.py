@@ -40,11 +40,6 @@ class SSLAuthority(Authority):
     ca_validity = '365'
     cert_validity = '365'
 
-    def __init__(self, ca_id):
-        ssl_ca_dir = os.path.join(MANAGER_PATH, 'ssl_ca')
-
-        super(SSLAuthority, self).__init__(ca_id, ssl_ca_dir)
-
     def generate(self):
         if os.path.exists(self.path):
             raise ValueError("A CA with the same id and type already exists")
