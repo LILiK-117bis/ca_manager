@@ -73,7 +73,7 @@ class SSHAuthority(Authority):
         """
         keys_pair_exist = os.path.exists(self.path) and os.path.exists(self.path + '.pub')
 
-        return keys_couple_exist
+        return keys_pair_exist
 
     def generate(self):
         """
