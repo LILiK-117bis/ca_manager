@@ -25,7 +25,7 @@ class Authority(Model):
 
     @property
     def path(self):
-        return os.path.join(self.ca_dir, self.ca_id)
+        return os.path.join(MANAGER_PATH, self.ca_id)
 
     def generate(self):
         raise NotImplementedError()
