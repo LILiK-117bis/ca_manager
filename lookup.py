@@ -90,11 +90,41 @@ class RequestLookup(object):
         """
         Get a specific certificate request
         """
-        if not SignRequest(request_id):
-            raise IndexError
 
-        with RequestLoader(request_id) as request:
-            return request
+        with open(SignRequest(request_id).path, 'r') as stream:
+            request_data = json.load(
+                    stream,
+            )
+
+            requester = request_data.get('userName', None) or request_data.get('hostName', None)
+            root_requested = request_data.get('rootRequested', False)
+            key_data = request_data.get('keyData', None)
+
+            values = request_data['request'].values()
+
+            if 'ssh_user' in values:
+                return UserSSHRequest(
+                        request_id,
+                        requester,
+                        root_requested,
+                        key_data,
+                        )
+
+            elif 'ssh_host' in values:
+                return HostSSHRequest(
+                        request_id,
+                        requester,
+                        key_data,
+                        )
+
+            elif 'ssl_host' in values:
+                return HostSSLRequest(
+                        request_id,
+                        requester,
+                        key_data,
+                        )
+            else:
+                return SignRequest(request_id)
 
     @property
     def ssh(self):
