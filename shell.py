@@ -90,16 +90,32 @@ class CAManagerShell(cmd.Cmd):
         del self.ca_manager.request[request_id]
 
     def do_gen_ssh(self, l):
-        'Generate a SSH Certification authority'
-        argv = l.split()
+        'Generate a SSH Certification authority: GEN_SSH id name'
+        argv = l.split(maxsplit=1)
         ca_id = argv[0]
-        self.ca_manager.ca[ca_id] = SSHAuthority
+        name = argv[1]
+        new_auth = SSHAuthority(
+                ca_id = ca_id,
+                name = name,
+                serial = 0,
+                )
+
+        new_auth.generate()
+        new_auth.save()
 
     def do_gen_ssl(self, l):
         'Generate a SSL Certification authority'
-        argv = l.split()
+        argv = l.split(maxsplit=1)
         ca_id = argv[0]
-        self.ca_manager.ca[ca_id] = SSLAuthority
+        name = argv[1]
+        new_auth = SSLAuthority(
+                ca_id = ca_id,
+                name = name,
+                serial = 0,
+                )
+
+        new_auth.generate()
+        new_auth.save()
 
     def do_sign_request(self, l):
         'Sign a request using a CA: SIGN_REQUEST ca_id request_id'
