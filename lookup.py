@@ -3,6 +3,7 @@
 
 import cmd
 import hashlib
+from itertools import chain
 import json
 import os
 import os.path
@@ -34,18 +35,11 @@ class CALookup(object):
         self.path = MANAGER_PATH
 
     def __iter__(self):
-        authorities_path = os.path.join(self.path, 'pickled_cas')
 
-        auth = []
+        all_the_authorities = [ auth.select().iterator() for auth in self.allowed_auth]
 
-        for authority in os.listdir(authorities_path):
+        return chain.from_iterable(all_the_authorities)
 
-            pickle_path = os.path.join(self.path, 'pickled_cas', authority)
-
-            with open(pickle_path, 'rb') as stream:
-                auth.append(pickle.load(stream))
-
-        return iter(auth)
 
     def __getitem__(self, ca_id):
 
