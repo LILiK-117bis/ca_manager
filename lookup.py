@@ -134,13 +134,13 @@ class CertificateLookup:
         """
         Get a specific certificate from disk
         """
-        if not Certificate(certificate_id):
-            raise IndexError
-
-        return Certificate(certificate_id)
+        try:
+            return Certificate.get(Certificate.cert_id == certificate_id)
+        except Certificate.DoesNotExist:
+            raise IndexError()
 
     def __iter__(self):
         """
         Iterate over all certificate request in OUTPUT_PATH
         """
-        pass
+        return Certificate.select().iterator()
