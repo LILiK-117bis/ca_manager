@@ -29,6 +29,11 @@ class CAManagerShell(cmd.Cmd):
         for i, authority in enumerate(self.ca_manager.ca):
             print('- %d - %s' % (i, authority))
 
+    def do_ls_certificates(self, l):
+        'List the issued certificates: LS_CERTIFICATE'
+        for i, cert in enumerate(self.ca_manager.certificate):
+            print('- %d - %s' % (i, cert))
+
     def do_ls_requests(self, l):
         'List the available certification requests: LS_REQUESTS'
         print_available_requests(self.ca_manager)
