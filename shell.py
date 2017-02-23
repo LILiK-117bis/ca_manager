@@ -50,17 +50,50 @@ class CAManagerShell(cmd.Cmd):
             --------------------------------------------------
             CA type: %s
             CA name: %s
+            Serial: %s
             """
 
             ca_info = (
                     ca_id,
                     ca.__class__.__name__,
                     ca.name,
+                    ca.serial,
                     )
 
             print(ca_description % ca_info)
         else:
             print("No CA found for id: '%s'" % request_id)
+
+    def do_describe_certificate(self, l):
+        'Show certificate information: DESCRIBE_CERTIFICATE'
+        certificate_id = l.split()[0]
+
+        cert = self.ca_manager.certificate[certificate_id]
+
+        if cert:
+            cert_description = """
+            Certificate %s
+            --------------------------------------------------
+            Signin authority: %s
+            Signed on: %s
+            Receiver: %s
+            Certificate Serial: %s
+            Validity Interval: %s
+            """
+
+            request_info = (
+                    certificate_id,
+                    cert.signed_by,
+                    cert.date_issued,
+                    cert.receiver,
+                    cert.serial_number,
+                    cert.validity_interval,
+                    )
+
+            print(cert_description % cert_info)
+        else:
+            print('No certificate found for id: "%s"' % cert_id)
+        pass
 
     def do_describe_request(self, l):
         'Show sign request information: DESCRIBE_REQUEST'
