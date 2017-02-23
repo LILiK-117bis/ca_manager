@@ -43,17 +43,12 @@ class CALookup:
 
     def __getitem__(self, ca_id):
 
-        if SSHAuthority(ca_id):
-
-            return SSHAuthority(ca_id)
-
-        elif SSLAuthority(ca_id):
-
-            return SSLAuthority(ca_id)
-
-        else:
-            raise IndexError('Unknown CA "%s"' % ca_id)
-
+        for authority_type in self.allowed_auth:
+            try:
+                ca = authority_type.get(authority_type.ca_id == ca_id)
+                return ca
+            except authority_type.DoesNotExist:
+                continue
 
 class RequestLookup:
     """
