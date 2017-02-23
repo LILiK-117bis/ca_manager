@@ -24,7 +24,7 @@ class CAManagerShell(cmd.Cmd):
         super(CAManagerShell, self).__init__()
         self.ca_manager = ca_manager
 
-    def do_ls_ca(self, l):
+    def do_ls_cas(self, l):
         'List the available certification authorities: LS_CA'
         for i, authority in enumerate(self.ca_manager.ca):
             print('- %d - %s' % (i, authority))
