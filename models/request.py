@@ -10,7 +10,7 @@ import json
 from paths import *
 
 __doc__= """
-Module of classes to handle certificate requests
+Module of classes to handle sign requests
 """
 
 class SignRequest(object):
