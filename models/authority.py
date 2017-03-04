@@ -9,7 +9,7 @@ import os.path
 from paths import *
 
 __doc__= """
-Module of classes to handle certificate requests
+Module of base classes to handle authorities
 """
 
 class Authority(Model):
