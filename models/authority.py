@@ -16,9 +16,19 @@ class Authority(Model):
     request_allowed = []
 
     # data stored in the database
-    ca_id = CharField()
-    name = CharField()
-    serial = IntegerField()
+    ca_id = CharField(
+            index = True,
+            unique = True,
+            )
+
+    name = CharField(
+            index = True,
+            help_text = 'authority descriptive name',
+            )
+
+    serial = IntegerField(
+            help_text = 'last certificate serial number',
+            )
 
     def __bool__(self):
         return os.path.exists(self.path)
