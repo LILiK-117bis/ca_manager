@@ -21,6 +21,10 @@ class Authority(Model):
             unique = True,
             )
 
+    creation_date = DateTimeField(
+            help_text = 'authority creation date',
+            )
+
     name = CharField(
             index = True,
             help_text = 'authority descriptive name',
