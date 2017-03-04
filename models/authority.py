@@ -16,6 +16,8 @@ class Authority(Model):
     request_allowed = []
 
     # data stored in the database
+    active = BooleanField()
+
     ca_id = CharField(
             index = True,
             unique = True,
