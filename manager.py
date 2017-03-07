@@ -23,8 +23,6 @@ __doc__= """
 Define classes to interact with certificate requests and Certification Authority
 """
 
-db = SqliteDatabase(os.path.join(MANAGER_PATH, 'ca_manager.db'))
-
 class CAManager(object):
     """
     Middleware to interact with ssh-keygen
@@ -36,10 +34,6 @@ class CAManager(object):
         self.ca = CALookup()
         self.request = RequestLookup()
         self.certificate = CertificateLookup()
-
-    @property
-    def db_path(self):
-        return os.path.join(self.path, 'ca_manager.db')
 
     @property
     def ssh_ca_dir(self):
@@ -71,22 +65,6 @@ def init_manager(paths):
 
         if not os.path.exists(dirpath):
             os.mkdir(dirpath)
-
-    # ensure the database exists
-    # in MANAGER_PATH and create the
-    # tables for Authority and Certificate
-    db.connect()
-
-    models_required = [
-        SSHAuthority,
-        SSLAuthority,
-        Certificate,
-    ]
-
-    db.create_tables(
-        models_required,
-        safe = True,
-        )
 
 def sign_request(ca_manager, request_id, authority_id):
 

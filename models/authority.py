@@ -6,13 +6,15 @@ from peewee import *
 import os
 import os.path
 
+from models import customModel
+
 from paths import *
 
 __doc__= """
 Module of base classes to handle authorities
 """
 
-class Authority(Model):
+class Authority(customModel.CustomModel):
     request_allowed = []
 
     # data stored in the database

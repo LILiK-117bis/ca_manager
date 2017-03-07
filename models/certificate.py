@@ -6,11 +6,13 @@ from peewee import *
 import os
 import json
 
+from models import customModel
+
 from models.authority import Authority
 from paths import *
 
 
-class Certificate(Model):
+class Certificate(customModel.CustomModel):
     """
     """
 
