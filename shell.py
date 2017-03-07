@@ -3,6 +3,7 @@
 
 import cmd
 import sys
+from datetime import datetime
 
 from models.ssh import SSHAuthority
 from models.ssl import SSLAuthority
@@ -38,8 +39,8 @@ class CAManagerShell(cmd.Cmd):
         'List the available certification requests: LS_REQUESTS'
         print_available_requests(self.ca_manager)
 
-    def do_describe_cas(self, l):
-        'Show certification authority information: DESCRIBE_CAS'
+    def do_describe_ca(self, l):
+        'Show certification authority information: DESCRIBE_CA'
         ca_id = l.split()[0]
 
         ca = self.ca_manager.ca[ca_id]
@@ -136,6 +137,8 @@ class CAManagerShell(cmd.Cmd):
                 ca_id = ca_id,
                 name = name,
                 serial = 0,
+                active = True,
+                creation_date = datetime.now(),
                 )
 
         new_auth.generate()
@@ -150,6 +153,8 @@ class CAManagerShell(cmd.Cmd):
                 ca_id = ca_id,
                 name = name,
                 serial = 0,
+                active = True,
+                creation_date = datetime.now(),
                 )
 
         new_auth.generate()
@@ -177,17 +182,33 @@ class CAManagerShell(cmd.Cmd):
 
             sign_request(self.ca_manager, request_id, authority_id)
 
+    def common_complete_request(self, text, line, begidx, endidx):
+        argc = len(("%send"%line).split())
+        if argc == 2:
+            return [request.req_id for i, request in enumerate(self.ca_manager.request) if request.req_id.startswith(text)]
+
+    def complete_drop_request(self, text, line, begidx, endidx):
+        return self.common_complete_request(text, line, begidx, endidx)
+
+
+    def complete_describe_request(self, text, line, begidx, endidx):
+        return self.common_complete_request(text, line, begidx, endidx)
+
     def complete_sign_request(self, text, line, begidx, endidx):
+        results = ''
+        argc = len(("%send"%line).split())
 
-        ca_results = [
-                a for a in self.ca_manager.ca if a.ca_id.startswith(text)
-                ]
+        if argc == 2:
+            results = [ca_item.ca_id for i, ca_item  in enumerate(self.ca_manager.ca) if ca_item.ca_id.startswith(text)]
+        elif argc == 3:
+            try:
+                ca = self.ca_manager.ca[line.split()[1]]
+            except Exception as e:
+                print ("Error: %s"%e)
+                return
 
-        req_result = [
-                a for a in self.ca_manager.request if a.req_id.startswith(text)
-                ]
-
-        return ' '.join(results)
+            results = [request.req_id for i, request in enumerate(self.ca_manager.request) if request.req_id.startswith(text) and request.__class__ in ca.compatible_requests]
+        return results
 
     def complete(self, text, state):
         results = super().complete(text, state)

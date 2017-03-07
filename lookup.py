@@ -89,7 +89,7 @@ class RequestLookup:
             root_requested = request_data.get('rootRequested', False)
             key_data = request_data.get('keyData', None)
 
-            values = request_data['request'].values()
+            values = request_data.values()
 
             if 'ssh_user' in values:
                 return UserSSHRequest(
