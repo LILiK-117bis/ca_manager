@@ -44,7 +44,7 @@ class Certificate(customModel.CustomModel):
                 )
 
     def __repr__(self):
-        return ( "%s %s" % ( str(self.__class__.__name__), str(self.cert_id) ) )
+        return ( "%s %s for %s on %s" % (self.__class__.__name__, self.cert_id, self.receiver, self.date_issued))
 
     def __bool__(self):
         return os.path.exists(self.path)

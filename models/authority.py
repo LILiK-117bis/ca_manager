@@ -54,4 +54,4 @@ class Authority(customModel.CustomModel):
         raise NotImplementedError()
 
     def __repr__(self):
-        return ( "%s %s (%s)" % ( self.__class__.__name__, self.ca_id, self.name ) )
+        return ( "%s %s (%s), created on %s" % ( self.__class__.__name__, self.ca_id, self.name, self.creation_date) )
