@@ -13,7 +13,7 @@ This is a shell for a user, the shell only reads the input from the user and ret
 
 The server logs can be found at `/home/request/request_server.log`
 
-#### `ca_sheel.py`
+#### `manager.py`
 
 This is a shell for a user, the shell limits the commands to the one we are interested, like generating a SSH/SSL CA, signing keys.
 
