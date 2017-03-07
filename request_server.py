@@ -7,11 +7,13 @@ import sys
 import time
 import uuid
 
+from paths import *
+
 __doc__= """
 Procedure to spawn a shell for automation, used by Ansible
 """
 
-logfile= '/home/request/request_server.log'
+logfile= os.path.join(REQUEST_USER_HOME, 'request_server.log')
 
 logging.basicConfig(
         filename = logfile,
@@ -20,10 +22,6 @@ logging.basicConfig(
         )
 
 logger = logging.getLogger('request_server')
-
-
-REQUESTS_PATH = "/var/lib/ca_manager/requests"
-RESULTS_PATH = "/var/lib/ca_manager/results"
 
 
 def exit_good(response):
