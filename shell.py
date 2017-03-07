@@ -31,7 +31,7 @@ class CAManagerShell(cmd.Cmd):
             print('- %d - %s' % (i, authority))
 
     def do_ls_certificates(self, l):
-        'List the issued certificates: LS_CERTIFICATE'
+        'List the issued certificates: LS_CERTIFICATES'
         for i, cert in enumerate(self.ca_manager.certificate):
             print('- %d - %s' % (i, cert))
 
@@ -40,10 +40,16 @@ class CAManagerShell(cmd.Cmd):
         print_available_requests(self.ca_manager)
 
     def do_describe_ca(self, l):
-        'Show certification authority information: DESCRIBE_CA'
-        ca_id = l.split()[0]
+        'Show certification authority information: DESCRIBE_CA ca_id'
+        argv = l.split()
+        argc = len(argv)
 
-        ca = self.ca_manager.ca[ca_id]
+        # argument number is too low
+        if argc < 1:
+            print("Usage: DESCRIBE_CA ca_id")
+            return
+
+        ca = self.ca_manager.ca[argv[0]]
 
         if ca:
             ca_description = """
@@ -55,7 +61,7 @@ class CAManagerShell(cmd.Cmd):
             """
 
             ca_info = (
-                    ca_id,
+                    ca.ca_id,
                     ca.__class__.__name__,
                     ca.name,
                     ca.serial,
@@ -63,13 +69,19 @@ class CAManagerShell(cmd.Cmd):
 
             print(ca_description % ca_info)
         else:
-            print("No CA found for id: '%s'" % request_id)
+            print("No CA found for id: '%s'" % argv[0])
 
     def do_describe_certificate(self, l):
-        'Show certificate information: DESCRIBE_CERTIFICATE'
-        certificate_id = l.split()[0]
+        'Show certificate information: DESCRIBE_CERTIFICATE request_id'
+        argv = l.split()
+        argc = len(argv)
 
-        cert = self.ca_manager.certificate[certificate_id]
+        # argument number is too low
+        if argc < 1:
+            print("Usage: DESCRIBE_CERTIFICATE request_id")
+            return
+
+        cert = self.ca_manager.certificate[argv[0]]
 
         if cert:
             cert_description = """
@@ -83,7 +95,7 @@ class CAManagerShell(cmd.Cmd):
             """
 
             request_info = (
-                    certificate_id,
+                    cert.cert_id,
                     cert.signed_by,
                     cert.date_issued,
                     cert.receiver,
@@ -93,14 +105,20 @@ class CAManagerShell(cmd.Cmd):
 
             print(cert_description % cert_info)
         else:
-            print('No certificate found for id: "%s"' % cert_id)
+            print('No certificate found for id: "%s"' % argv[0])
         pass
 
     def do_describe_request(self, l):
-        'Show sign request information: DESCRIBE_REQUEST'
-        request_id = l.split()[0]
+        'Show sign request information: DESCRIBE_REQUEST request_id'
+        argv = l.split()
+        argc = len(argv)
 
-        request = self.ca_manager.request[request_id]
+        # argument number is too low
+        if argc < 1:
+            print("Usage: DESCRIBE_REQUEST request_id")
+            return
+
+        request = self.ca_manager.request[argv[0]]
 
         if request:
             request_description = """
@@ -112,7 +130,7 @@ class CAManagerShell(cmd.Cmd):
             """
 
             request_info = (
-                    request_id,
+                    request.req_id,
                     request.__class__.__name__,
                     request.fields,
                     request.key_data,
@@ -120,17 +138,30 @@ class CAManagerShell(cmd.Cmd):
 
             print(request_description % request_info)
         else:
-            print('No request found for id: "%s"' % request_id)
+            print('No request found for id: "%s"' % argv[0])
 
     def do_drop_request(self, l):
-        'Delete a sign request: DROP_REQUEST'
-        request_id = l.split()[0]
+        'Delete a sign request: DROP_REQUEST request_id'
+        argv = l.split()
+        argc = len(argv)
 
-        del self.ca_manager.request[request_id]
+        # argument number is too low
+        if argc < 1:
+            print("Usage: DROP_REQUEST request_id")
+            return
+
+        del self.ca_manager.request[argv[0]]
 
     def do_gen_ssh(self, l):
-        'Generate a SSH Certification authority: GEN_SSH id name'
+        'Generate a SSH Certification authority: GEN_SSH ca_id ca_description'
         argv = l.split(maxsplit=1)
+        argc = len(argv)
+
+        # argument number is too low
+        if argc < 2:
+            print("Usage: GEN_SSH ca_id ca_description")
+            return
+
         ca_id = argv[0]
         name = argv[1]
         new_auth = SSHAuthority(
@@ -145,8 +176,15 @@ class CAManagerShell(cmd.Cmd):
         new_auth.save()
 
     def do_gen_ssl(self, l):
-        'Generate a SSL Certification authority'
+        'Generate a SSL Certification authority: GEN_SSL ca_id ca_description'
         argv = l.split(maxsplit=1)
+        argc = len(argv)
+
+        # argument number is too low
+        if argc < 2:
+            print("Usage: gen_ssl ca_id ca_description")
+            return
+
         ca_id = argv[0]
         name = argv[1]
         new_auth = SSLAuthority(
@@ -187,9 +225,24 @@ class CAManagerShell(cmd.Cmd):
         if argc == 2:
             return [request.req_id for i, request in enumerate(self.ca_manager.request) if request.req_id.startswith(text)]
 
+    def common_complete_ca(self, text, line, begidx, endidx):
+        argc = len(("%send"%line).split())
+        if argc == 2:
+            return [ca_item.ca_id for i, ca_item  in enumerate(self.ca_manager.ca) if ca_item.ca_id.startswith(text)]
+
+    def common_complete_certificate(self, text, line, begidx, endidx):
+        argc = len(("%send"%line).split())
+        if argc == 2:
+            return [certificate.cert_id for i, certificate  in enumerate(self.ca_manager.certificate) if certificate.cert_id.startswith(text)]
+
     def complete_drop_request(self, text, line, begidx, endidx):
         return self.common_complete_request(text, line, begidx, endidx)
 
+    def complete_describe_certificate(self, text, line, begidx, endidx):
+        return self.common_complete_certificate(text, line, begidx, endidx)
+
+    def complete_describe_ca(self, text, line, begidx, endidx):
+        return self.common_complete_ca(text, line, begidx, endidx)
 
     def complete_describe_request(self, text, line, begidx, endidx):
         return self.common_complete_request(text, line, begidx, endidx)
