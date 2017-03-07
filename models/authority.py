@@ -36,6 +36,8 @@ class Authority(Model):
             help_text = 'last certificate serial number',
             )
 
+    compatible_requests = []
+
     def __bool__(self):
         return os.path.exists(self.path)
 
@@ -50,4 +52,4 @@ class Authority(Model):
         raise NotImplementedError()
 
     def __repr__(self):
-        return ( "%s %s" % ( self.__class__.__name__, self.ca_id ) )
+        return ( "%s %s (%s)" % ( self.__class__.__name__, self.ca_id, self.name ) )

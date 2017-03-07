@@ -12,7 +12,6 @@ from models.certificate import Certificate
 from models.request import SignRequest
 from paths import *
 
-
 class UserSSHRequest(SignRequest):
     def __init__(self, req_id, user_name, root_requested, key_data):
         super(UserSSHRequest, self).__init__(req_id)
@@ -38,6 +37,7 @@ class UserSSHRequest(SignRequest):
 
 
 class HostSSHRequest(SignRequest):
+
     def __init__(self, req_id, host_name, key_data):
         super(HostSSHRequest, self).__init__(req_id)
 
@@ -65,7 +65,10 @@ class SSHAuthority(Authority):
 
     key_algorithm = 'ed25519'
 
-    cert_validity = '+52w'
+    user_validity = '+52w'
+    host_validity = '+52w'
+
+    compatible_requests = [HostSSHRequest, UserSSHRequest]
 
     def __bool__(self):
         """
@@ -105,9 +108,8 @@ class SSHAuthority(Authority):
                 signed_by = self,
                 cert_id = request.req_id,
                 date_issued = datetime.now(),
-                receiver = self.receiver,
+                receiver = request.receiver,
                 serial_number = self.serial,
-                validity_interval = self.user_validity,
                 )
 
         # write the key data from the request into
@@ -124,22 +126,24 @@ class SSHAuthority(Authority):
 
             subprocess.check_output(['ssh-keygen',
                 '-s', ca_private_key,
-                '-I', 'user_%s' % request.user_name,
+                '-I', 'user_%s' % request.receiver,
                 '-n', ','.join(login_names),
                 '-V', self.user_validity,
                 '-z', str(self.serial),
                 pub_key_path])
+            cert.validity_interval = self.user_validity
 
 
         elif type(request) == HostSSHRequest:
             subprocess.check_output(['ssh-keygen',
                 '-s', ca_private_key,
-                '-I', 'host_%s' % request.host_name.replace('.', '_'),
+                '-I', 'host_%s' % request.receiver.replace('.', '_'),
                 '-h',
                 '-n', request.host_name,
                 '-V', self.host_validity,
                 '-z', str(self.serial),
                 pub_key_path])
+            cert.validity_interval = self.host_validity
 
         self.serial += 1
 
