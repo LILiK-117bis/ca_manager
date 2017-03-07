@@ -55,7 +55,7 @@ The shell just output a json with `status`, `reason`, `failed` and `msg` keys.
 
 The keys `failed` and `msg` are only requested to comply with ansible.
 
-#### `ca_sheel.py`
+#### `manager.py`
 
 This is a shell for a user, the shell limits the commands to the one we are interested, like generating a SSH/SSL CA, signing keys.
 
