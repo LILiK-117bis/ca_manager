@@ -35,6 +35,11 @@ class CAManager(object):
         self.request = RequestLookup()
         self.certificate = CertificateLookup()
 
+        # Create tables
+        SSHAuthority.create_table(fail_silently = True)
+        SSLAuthority.create_table(fail_silently = True)
+        Certificate.create_table(fail_silently = True)
+
     @property
     def ssh_ca_dir(self):
         return os.path.join(self.path, 'ssh_cas')
