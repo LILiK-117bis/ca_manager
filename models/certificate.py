@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from peewee import *
+from playhouse.gfk import *
 
 import os
 import json
 
 from models import customModel
 
-from models.authority import Authority
 from paths import *
 
 
@@ -16,10 +15,9 @@ class Certificate(customModel.CustomModel):
     """
     """
 
-    signed_by = ForeignKeyField(
-            Authority,
-            related_name = 'signed_certificates',
-            )
+    authority_type = CharField(null=True)
+    authority_id = IntegerField(null=True)
+    authority = GFKField('authority_type', 'authority_id')
 
     cert_id = CharField(
                 index = True,

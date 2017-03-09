@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from peewee import *
+from playhouse.gfk import *
 
 from datetime import datetime
 import os.path
@@ -103,7 +103,7 @@ class SSHAuthority(Authority):
         pub_key_path = request.destination
         
         cert = Certificate(
-                signed_by = self,
+                authority = self,
                 cert_id = request.req_id,
                 date_issued = datetime.now(),
                 receiver = request.receiver,

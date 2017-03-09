@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from peewee import *
+from playhouse.gfk import *
 
 import os
 import os.path
