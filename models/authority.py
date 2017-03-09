@@ -15,6 +15,7 @@ Module of base classes to handle authorities
 """
 
 class Authority(customModel.CustomModel):
+
     request_allowed = []
 
     # data stored in the database
@@ -37,8 +38,6 @@ class Authority(customModel.CustomModel):
     serial = IntegerField(
             help_text = 'last certificate serial number',
             )
-
-    compatible_requests = []
 
     def __bool__(self):
         return os.path.exists(self.path)
