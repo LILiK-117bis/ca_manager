@@ -90,7 +90,7 @@ def sign_request(ca_manager, request_id, authority_id):
     h.update(request.key_data.encode('utf-8'))
     print("Request hash: %s" % h.hexdigest())
 
-    print("You are about to sign this request with the following CA:")
+    print("You are about to sign this request with the following CA: %s"%authority)
     confirm = input('Proceed? (type yes)> ')
     if confirm != 'yes':
         print ("user abort")

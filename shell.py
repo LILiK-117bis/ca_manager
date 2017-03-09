@@ -260,7 +260,7 @@ class CAManagerShell(cmd.Cmd):
                 print ("Error: %s"%e)
                 return
 
-            results = [request.req_id for i, request in enumerate(self.ca_manager.request) if request.req_id.startswith(text) and request.__class__ in ca.compatible_requests]
+            results = [request.req_id for i, request in enumerate(self.ca_manager.request) if request.req_id.startswith(text) and request.__class__ in ca.request_allowed]
         return results
 
     def complete(self, text, state):

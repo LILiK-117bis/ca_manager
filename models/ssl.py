@@ -40,8 +40,6 @@ class SSLAuthority(Authority):
     ca_validity = '365'
     cert_validity = '365'
 
-    compatible_requests = [HostSSLRequest]
-
     def generate(self):
         if os.path.exists(self.path):
             raise ValueError("A CA with the same id and type already exists")
@@ -68,7 +66,9 @@ class SSLAuthority(Authority):
 
 
     def sign(self, request):
-        OUTPUT_PATH
+        """
+        Sign a *SSLRequest with this certification authority
+        """
 
         assert type(request) in self.request_allowed
 

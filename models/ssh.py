@@ -68,8 +68,6 @@ class SSHAuthority(Authority):
     user_validity = '+52w'
     host_validity = '+52w'
 
-    compatible_requests = [HostSSHRequest, UserSSHRequest]
-
     def __bool__(self):
         """
         Check if key pair already exists
