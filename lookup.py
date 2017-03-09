@@ -1,16 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import cmd
-import hashlib
 from itertools import chain
 import json
 import os
 import os.path
-import pickle
-import shutil
-import sqlite3
-import tempfile
 
 from models.ssh import SSHAuthority, UserSSHRequest, HostSSHRequest
 from models.ssl import SSLAuthority, HostSSLRequest

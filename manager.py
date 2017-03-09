@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-import cmd
 import hashlib
-import json
 import os
 import os.path
 import shutil
-import tempfile
 
-from peewee import *
+from playhouse.gfk import *
 
 from lookup import CALookup, RequestLookup, CertificateLookup
 
@@ -19,7 +15,7 @@ from models.certificate import Certificate
 
 from paths import *
 
-__doc__= """
+__doc__ = """
 Define classes to interact with certificate requests and Certification Authority
 """
 
@@ -36,9 +32,9 @@ class CAManager(object):
         self.certificate = CertificateLookup()
 
         # Create tables
-        SSHAuthority.create_table(fail_silently = True)
-        SSLAuthority.create_table(fail_silently = True)
-        Certificate.create_table(fail_silently = True)
+        SSHAuthority.create_table(fail_silently=True)
+        SSLAuthority.create_table(fail_silently=True)
+        Certificate.create_table(fail_silently=True)
 
     @property
     def ssh_ca_dir(self):
@@ -90,7 +86,7 @@ def sign_request(ca_manager, request_id, authority_id):
     h.update(request.key_data.encode('utf-8'))
     print("Request hash: %s" % h.hexdigest())
 
-    print("You are about to sign this request with the following CA: %s"%authority)
+    print("You are about to sign the following request:\n  %s\nwith the following CA:\n  %s"%(request, authority))
     confirm = input('Proceed? (type yes)> ')
     if confirm != 'yes':
         print ("user abort")

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 import cmd
 import sys
 from datetime import datetime
@@ -10,16 +9,16 @@ from models.ssl import SSLAuthority
 
 from manager import sign_request
 
-__doc__= """
-        Class to make a shell and interact with the user
-        """
+__doc__ = """
+Class to make a shell and interact with the user
+"""
 
 class CAManagerShell(cmd.Cmd):
-    intro= """# LILiK CA Manager #
+    intro = """# LILiK CA Manager #
     Welcome to the certification authority shell.
     Type help or ? to list commands.
     """
-    prompt= "(CA Manager)> "
+    prompt = "(CA Manager)> "
 
     def __init__(self, ca_manager):
         super(CAManagerShell, self).__init__()
@@ -28,12 +27,12 @@ class CAManagerShell(cmd.Cmd):
     def do_ls_cas(self, l):
         'List the available certification authorities: LS_CA'
         for i, authority in enumerate(self.ca_manager.ca):
-            print('- %d - %s' % (i, authority))
+            print(authority)
 
     def do_ls_certificates(self, l):
         'List the issued certificates: LS_CERTIFICATES'
         for i, cert in enumerate(self.ca_manager.certificate):
-            print('- %d - %s' % (i, cert))
+            print(cert)
 
     def do_ls_requests(self, l):
         'List the available certification requests: LS_REQUESTS'
@@ -275,9 +274,9 @@ class CAManagerShell(cmd.Cmd):
 
 
 def print_available_authorities(ca_manager):
-    for i, ca_item  in enumerate(ca_manager.ca):
-        print("- %d : %s" % (i , ca_item))
+    for i, ca  in enumerate(ca_manager.ca):
+        print(ca)
 
 def print_available_requests(ca_manager):
     for i, request in enumerate(ca_manager.request):
-        print("- %d : %s" % (i, request))
+        print(request)

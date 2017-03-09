@@ -29,6 +29,9 @@ class HostSSLRequest(SignRequest):
             ("Hostname", self.host_name)
         ]
 
+    @property
+    def receiver(self):
+        return self.host_name
 
 class SSLAuthority(Authority):
     request_allowed = [ HostSSLRequest, ]
@@ -65,27 +68,17 @@ class SSLAuthority(Authority):
             stream.write(str(0))
 
 
-    def sign(self, request):
+    def generate_certificate(self, request):
         """
         Sign a *SSLRequest with this certification authority
         """
 
-        assert type(request) in self.request_allowed
-
-        pub_key_path = os.path.join(OUTPUT_PATH, request.req_id + '.pub')
-        cert_path = os.path.join(OUTPUT_PATH, request.req_id + '-cert.pub')
-
-        with open(self.path + '.serial', 'r') as stream:
-            next_serial = int(stream.read())
-        with open(self.path + '.serial', 'w') as stream:
-            stream.write(str(next_serial + 1))
+        pub_key_path = request.destination + '.pub'
+        cert_path = request.destination + '-cert.pub'
 
         with open(pub_key_path, 'w') as stream:
             stream.write(request.key_data)
 
-        ca_private_key = self.path
-
-        # openssl x509 -req -days 360 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt        # print()
         subprocess.check_output(['openssl',
                         'x509',
                         '-req',
@@ -97,5 +90,5 @@ class SSLAuthority(Authority):
                         '-out', cert_path,
                         '-%s'%self.key_algorithm])
 
-        return cert_path
+        return self.ca_validity
 

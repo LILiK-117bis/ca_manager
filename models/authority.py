@@ -3,6 +3,8 @@
 
 from playhouse.gfk import *
 
+from datetime import datetime
+
 import os
 import os.path
 
@@ -53,6 +55,28 @@ class Authority(customModel.CustomModel):
         raise NotImplementedError()
 
     def sign(self, request):
+        assert type(request) in self.request_allowed
+
+        # write the key data from the request into
+        # the output folder
+        with open(request.destination + '.pub', 'w') as stream:
+            stream.write(request.key_data)
+
+        cert = Certificate(
+                authority = self,
+                cert_id = request.req_id,
+                date_issued = datetime.now(),
+                receiver = request.receiver,
+                serial_number = self.serial,
+                )
+
+        cert.validity_interval = self.generate_certificate(request)
+
+        cert.save()
+
+        return cert.path
+
+    def generate_certificate(self, request):
         raise NotImplementedError()
 
     def __repr__(self):

@@ -3,7 +3,6 @@
 
 from playhouse.gfk import *
 
-from datetime import datetime
 import os.path
 import subprocess
 
@@ -93,27 +92,12 @@ class SSHAuthority(Authority):
             raise ValueError('A CA with the same id already exists')
 
 
-    def sign(self, request):
+    def generate_certificate(self, request):
         """
         Sign a *SSHRequest with this certification authority
         """
 
-        assert type(request) in self.request_allowed
-
-        pub_key_path = request.destination
-        
-        cert = Certificate(
-                authority = self,
-                cert_id = request.req_id,
-                date_issued = datetime.now(),
-                receiver = request.receiver,
-                serial_number = self.serial,
-                )
-
-        # write the key data from the request into
-        # the output folder
-        with open(request.destination, 'w') as stream:
-            stream.write(request.key_data)
+        pub_key_path = request.destination + '.pub'
 
         ca_private_key = self.path
 
@@ -129,7 +113,7 @@ class SSHAuthority(Authority):
                 '-V', self.user_validity,
                 '-z', str(self.serial),
                 pub_key_path])
-            cert.validity_interval = self.user_validity
+            validity_interval = self.user_validity
 
 
         elif type(request) == HostSSHRequest:
@@ -141,12 +125,8 @@ class SSHAuthority(Authority):
                 '-V', self.host_validity,
                 '-z', str(self.serial),
                 pub_key_path])
-            cert.validity_interval = self.host_validity
+            validity_interval = self.host_validity
 
-        self.serial += 1
-
-        cert.save()
-
-        return cert.path
+        return validity_interval
 
 
