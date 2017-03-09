@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
 import os.path
-import sqlite3
-import subprocess
-import json
 
 from paths import *
 
@@ -18,7 +14,7 @@ class SignRequest(object):
         self.req_id = req_id
 
     def __repr__(self):
-        return ( "%s %s with fileds: %s" % (self.__class__.__name__, self.req_id, self.fields))
+        return ( "%s %s with fields: %s" % (self.__class__.__name__, self.req_id, self.fields))
 
     def __bool__(self):
         return os.path.exists(self.path)
@@ -37,7 +33,7 @@ class SignRequest(object):
 
     @property
     def destination(self):
-        return os.path.join(OUTPUT_PATH, self.req_id + '.pub')
+        return os.path.join(OUTPUT_PATH, self.req_id)
 
     @property
     def fields(self):
