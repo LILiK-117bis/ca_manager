@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from peewee import *
+from playhouse.gfk import *
 
 import os
 import os.path
 
 from models import customModel
+from models.certificate import Certificate
 
 from paths import *
 
@@ -15,6 +16,8 @@ Module of base classes to handle authorities
 """
 
 class Authority(customModel.CustomModel):
+
+    signed_certificates = ReverseGFK(Certificate, 'authority_type', 'authority_id')
 
     request_allowed = []
 

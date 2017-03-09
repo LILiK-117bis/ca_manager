@@ -1,5 +1,5 @@
 from paths import *
-from peewee import *
+from playhouse.gfk import *
 import os
 
 custom_db = SqliteDatabase(os.path.join(MANAGER_PATH, 'ca_manager.db'))
