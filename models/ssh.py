@@ -97,9 +97,9 @@ class SSHAuthority(Authority):
         Sign a *SSHRequest with this certification authority
         """
 
-        pub_key_path = request.destination + '.pub'
+        pub_key_path = request.destination
 
-        ca_private_key = self.path
+        ca_private_key = request.cert_destination
 
         if type(request) == UserSSHRequest:
             login_names = [ request.user_name, ]

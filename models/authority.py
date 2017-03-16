@@ -59,7 +59,7 @@ class Authority(customModel.CustomModel):
 
         # write the key data from the request into
         # the output folder
-        with open(request.destination + '.pub', 'w') as stream:
+        with open(request.destination, 'w') as stream:
             stream.write(request.key_data)
 
         cert = Certificate(
@@ -68,6 +68,7 @@ class Authority(customModel.CustomModel):
                 date_issued = datetime.now(),
                 receiver = request.receiver,
                 serial_number = self.serial,
+                path = request.cert_destination,
                 )
 
         cert.validity_interval = self.generate_certificate(request)

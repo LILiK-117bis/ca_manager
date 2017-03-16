@@ -33,7 +33,11 @@ class SignRequest(object):
 
     @property
     def destination(self):
-        return os.path.join(OUTPUT_PATH, self.req_id)
+        return os.path.join(OUTPUT_PATH, self.req_id + ".pub")
+
+    @property
+    def cert_destination(self):
+        return os.path.join(OUTPUT_PATH, self.req_id + '-cert.pub')
 
     @property
     def fields(self):

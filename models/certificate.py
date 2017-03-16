@@ -41,12 +41,12 @@ class Certificate(customModel.CustomModel):
                 help_text = 'how long will the certificate be valid',
                 )
 
+    path = CharField(
+                help_text = 'certificate\'s path on filesystem',
+                )
+
     def __repr__(self):
         return ( "%s %s for %s on %s issued by %s"%(self.__class__.__name__, self.cert_id, self.receiver, self.date_issued, self.authority))
 
     def __bool__(self):
         return os.path.exists(self.path)
-
-    @property
-    def path(self):
-        return os.path.join(OUTPUT_PATH, self.cert_id + '-cert.pub')

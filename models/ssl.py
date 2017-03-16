@@ -73,7 +73,7 @@ class SSLAuthority(Authority):
         Sign a *SSLRequest with this certification authority
         """
 
-        pub_key_path = request.destination + '.pub'
+        pub_key_path = request.destination
         cert_path = request.destination + '-cert.pub'
 
         with open(pub_key_path, 'w') as stream:
