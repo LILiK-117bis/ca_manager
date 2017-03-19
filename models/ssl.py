@@ -74,7 +74,7 @@ class SSLAuthority(Authority):
         """
 
         pub_key_path = request.destination
-        cert_path = request.destination + '-cert.pub'
+        cert_path = request.cert_destination
 
         with open(pub_key_path, 'w') as stream:
             stream.write(request.key_data)
