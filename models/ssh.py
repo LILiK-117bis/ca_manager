@@ -99,7 +99,7 @@ class SSHAuthority(Authority):
 
         pub_key_path = request.destination
 
-        ca_private_key = request.cert_destination
+        ca_private_key = self.path
 
         if type(request) == UserSSHRequest:
             login_names = [ request.user_name, ]
