@@ -149,7 +149,8 @@ class CAManagerShell(cmd.Cmd):
             print("Usage: DROP_REQUEST request_id")
             return
 
-        del self.ca_manager.request[argv[0]]
+        for item in argv:
+            del self.ca_manager.request[item]
 
     def do_gen_ssh(self, l):
         'Generate a SSH Certification authority: GEN_SSH ca_id ca_description'
