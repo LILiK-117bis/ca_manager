@@ -74,7 +74,7 @@ class Authority(customModel.CustomModel):
         cert.validity_interval = self.generate_certificate(request)
 
         cert.save()
-
+        self.serial += 1
         return cert.path
 
     def generate_certificate(self, request):
