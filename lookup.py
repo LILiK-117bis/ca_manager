@@ -7,7 +7,7 @@ import os
 import os.path
 
 from models.ssh import SSHAuthority, UserSSHRequest, HostSSHRequest
-from models.ssl import SSLAuthority, HostSSLRequest
+from models.ssl import SSLAuthority, HostSSLRequest, CASSLRequest
 
 from models.certificate import Certificate
 from models.request import SignRequest
@@ -79,7 +79,7 @@ class RequestLookup:
                     stream,
             )
 
-            requester = request_data.get('userName', None) or request_data.get('hostName', None)
+            requester = request_data.get('userName', None) or request_data.get('hostName', None) or request_data.get('caName', None)
             root_requested = request_data.get('rootRequested', False)
             key_data = request_data.get('keyData', None)
 
@@ -102,6 +102,12 @@ class RequestLookup:
 
             elif 'ssl_host' in values:
                 return HostSSLRequest(
+                        request_id,
+                        requester,
+                        key_data,
+                        )
+            elif 'ssl_ca' in values:
+                return CASSLRequest(
                         request_id,
                         requester,
                         key_data,

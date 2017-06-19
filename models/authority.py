@@ -41,7 +41,11 @@ class Authority(customModel.CustomModel):
             )
 
     serial = IntegerField(
-            help_text = 'last certificate serial number',
+            help_text = 'next certificate serial number',
+            )
+
+    isRoot = BooleanField(
+            help_text = 'is root authority?',
             )
 
     def __bool__(self):

@@ -12,6 +12,8 @@ from models.certificate import Certificate
 from models.request import SignRequest
 from paths import *
 
+import json
+
 class HostSSLRequest(SignRequest):
     def __init__(self, req_id, host_name, key_data):
         super(HostSSLRequest, self).__init__(req_id)
@@ -33,8 +35,29 @@ class HostSSLRequest(SignRequest):
     def receiver(self):
         return self.host_name
 
+class CASSLRequest(SignRequest):
+    def __init__(self, req_id, ca_name, key_data):
+        super(CASSLRequest, self).__init__(req_id)
+
+        self.ca_name = ca_name
+        self.key_data = key_data
+
+    @property
+    def name(self):
+        return "CA name: %s" % self.ca_name
+
+    @property
+    def fields(self):
+        return [
+            ("CA name", self.ca_name)
+        ]
+
+    @property
+    def receiver(self):
+        return self.ca_name
+
 class SSLAuthority(Authority):
-    request_allowed = [ HostSSLRequest, ]
+    request_allowed = [ HostSSLRequest, CASSLRequest, ]
 
     ca_key_algorithm = 'des3'
     key_length = '4096'
@@ -46,23 +69,51 @@ class SSLAuthority(Authority):
     def generate(self):
         if os.path.exists(self.path):
             raise ValueError("A CA with the same id and type already exists")
+        confirm = input('Is a root CA? [y/N]> ')
+        if confirm == 'y':
+            self.isRoot = True
+        else:
+            self.isRoot = False
 
         subprocess.check_output(['openssl',
             'genrsa',
             '-%s'%self.ca_key_algorithm,
             '-out', '%s'%(self.path),
             self.key_length])
+        print(self.isRoot)
+        if self.isRoot:
+            subprocess.check_output(['openssl',
+                'req',
+                '-extensions', 'v3_root_ca',
+                '-config', './openssl-config/openssl.cnf',
+                '-new',
+                '-x509',
+                '-days', self.ca_validity,
+                '-key', self.path,
+                # '-extensions', 'v3_ca'
+                '-out', "%s.pub"%self.path,
+                # '-config', "%s.conf"%self.path
+                ])
+        else:
+            subprocess.check_output(['openssl',
+                'req',
+                '-new',
+                #'-x509',
+                # '-days', self.ca_validity,
+                '-key', self.path,
+                # '-extensions', 'v3_ca'
+                '-out', "%s.csr"%self.path,
+                # '-config', "%s.conf"%self.path
+                ])
+            result_dict = {}
+            result_dict['keyType'] = 'ssl_ca'
+            result_dict['caName'] = self.ca_id
+            with open("%s.csr"%self.path, 'r') as f:
+                result_dict['keyData'] = "".join(f.readlines())
 
-        subprocess.check_output(['openssl',
-            'req',
-            '-new',
-            '-x509',
-            '-days', self.ca_validity,
-            '-key', self.path,
-            # '-extensions', 'v3_ca'
-            '-out', "%s.pub"%self.path,
-            # '-config', "%s.conf"%self.path
-            ])
+            request = { 'type': 'sign_request', 'request': result_dict }
+            print("Please sign the following request:")
+            print(json.dumps(request))
 
         with open(self.path + '.serial', 'w') as stream:
             stream.write(str(0))
@@ -91,4 +142,3 @@ class SSLAuthority(Authority):
                         '-%s'%self.key_algorithm])
 
         return self.ca_validity
-
