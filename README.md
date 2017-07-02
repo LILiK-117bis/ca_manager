@@ -1,7 +1,7 @@
 CA manager
 ==========
 
-![My authority]()
+![it's true]
 
 This collection of tools is our take on managing a CA, signing SSH keys and certificates, signin SSL certificates.
 
@@ -9,7 +9,7 @@ This collection of tools is our take on managing a CA, signing SSH keys and cert
 
 #### `request_server.py`
 
-This is a shell for a user, the shell only reads the input from the user and return a JSON, this user can be used with Ansible to request and retrive certificates.
+This is a shell for a user, the shell only reads the input from the user and return a JSON, this user can be used with Ansible to request and retrieve certificates.
 
 The server logs can be found at `/home/request/request_server.log`
 
@@ -20,3 +20,6 @@ This is a shell for a user, the shell limits the commands to the one we are inte
 ### Configuration
 
 The only configuration needed is the path where to operate, modifying te file `paths.py` is all is needed.
+
+[it's true]: https://user-images.githubusercontent.com/4076473/27771545-82c82628-5f50-11e7-91f2-86840a57dc07.jpg "For some definition of law"
+
