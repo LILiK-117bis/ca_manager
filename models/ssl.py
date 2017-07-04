@@ -144,4 +144,8 @@ class SSLAuthority(Authority):
                         '-out', cert_path,
                         '-%s'%self.key_algorithm])
 
+        if not self.isRoot:
+            with open(cert_path, "a") as cert_file:
+                with open("%s.pub"%self.path) as ca_cert_file:
+                    cert_file.writelines(ca_cert_file.readlines())
         return self.ca_validity
