@@ -81,7 +81,6 @@ class SSLAuthority(Authority):
             '-%s'%self.ca_key_algorithm,
             '-out', '%s'%(self.path),
             self.key_length])
-        print(self.isRoot)
         if self.isRoot:
             subprocess.check_output(['openssl',
                 'req',
@@ -124,6 +123,9 @@ class SSLAuthority(Authority):
         """
         Sign a *SSLRequest with this certification authority
         """
+
+        if not os.path.exists("%s.pub"%self.path) and not self.isRoot:
+            raise ValueError("The CA certificate '%s.pub' doesn't exists yet"%self.path)
 
         pub_key_path = request.destination
         cert_path = request.cert_destination
