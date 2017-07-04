@@ -63,7 +63,8 @@ class SSLAuthority(Authority):
     key_length = '4096'
 
     key_algorithm = 'sha256'
-    ca_validity = '365'
+    root_ca_validity = '3650'
+    ca_validity = '1825'
     cert_validity = '365'
 
     def generate(self):
@@ -88,7 +89,7 @@ class SSLAuthority(Authority):
                 '-config', os.path.join(os.path.dirname(os.path.abspath(getsourcefile(lambda:0))), '../openssl-config/openssl.cnf'),
                 '-new',
                 '-x509',
-                '-days', self.ca_validity,
+                '-days', self.root_ca_validity,
                 '-key', self.path,
                 # '-extensions', 'v3_ca'
                 '-out', "%s.pub"%self.path,
