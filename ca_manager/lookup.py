@@ -6,13 +6,13 @@ import json
 import os
 import os.path
 
-from models.ssh import SSHAuthority, UserSSHRequest, HostSSHRequest
-from models.ssl import SSLAuthority, HostSSLRequest, CASSLRequest
+from .models.ssh import SSHAuthority, UserSSHRequest, HostSSHRequest
+from .models.ssl import SSLAuthority, HostSSLRequest, CASSLRequest
 
-from models.certificate import Certificate
-from models.request import SignRequest
+from .models.certificate import Certificate
+from .models.request import SignRequest
 
-from paths import *
+from .paths import *
 
 class CALookup:
     """

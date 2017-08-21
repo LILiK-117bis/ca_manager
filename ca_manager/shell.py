@@ -4,10 +4,10 @@ import cmd
 import sys
 from datetime import datetime
 
-from models.ssh import SSHAuthority
-from models.ssl import SSLAuthority
+from ca_manager.models.ssh import SSHAuthority
+from ca_manager.models.ssl import SSLAuthority
 
-from manager import sign_request
+from ca_manager.manager import sign_request
 
 __doc__ = """
 Class to make a shell and interact with the user

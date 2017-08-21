@@ -7,13 +7,13 @@ import shutil
 
 from playhouse.gfk import *
 
-from lookup import CALookup, RequestLookup, CertificateLookup
+from .lookup import CALookup, RequestLookup, CertificateLookup
 
-from models.ssh import SSHAuthority
-from models.ssl import SSLAuthority
-from models.certificate import Certificate
+from .models.ssh import SSHAuthority
+from .models.ssl import SSLAuthority
+from .models.certificate import Certificate
 
-from paths import *
+from .paths import *
 
 __doc__ = """
 Define classes to interact with certificate requests and Certification Authority

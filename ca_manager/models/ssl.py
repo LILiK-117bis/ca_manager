@@ -7,10 +7,10 @@ import os
 from inspect import getsourcefile
 import subprocess
 
-from models.authority import Authority
-from models.certificate import Certificate
-from models.request import SignRequest
-from paths import *
+from .authority import Authority
+from .certificate import Certificate
+from .request import SignRequest
+from ..paths import *
 
 import json
 

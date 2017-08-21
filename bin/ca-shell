@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+from ca_manager.manager import CAManager, init_manager
+from ca_manager.paths import *
+from ca_manager.shell import CAManagerShell
+
+if __name__ == '__main__':
+
+    init_manager([
+        MANAGER_PATH,
+        REQUESTS_PATH,
+        OUTPUT_PATH,
+        RESULTS_PATH,
+        ])
+
+
+    ca_manager = CAManager(MANAGER_PATH)
+
+    CAManagerShell(ca_manager).cmdloop()

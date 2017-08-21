@@ -6,10 +6,10 @@ from playhouse.gfk import *
 import os.path
 import subprocess
 
-from models.authority import Authority
-from models.certificate import Certificate
-from models.request import SignRequest
-from paths import *
+from .authority import Authority
+from .certificate import Certificate
+from .request import SignRequest
+from ..paths import *
 
 class UserSSHRequest(SignRequest):
     def __init__(self, req_id, user_name, root_requested, key_data):

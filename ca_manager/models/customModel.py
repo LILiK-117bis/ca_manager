@@ -1,6 +1,7 @@
-from paths import *
 from playhouse.gfk import *
 import os
+
+from ..paths import *
 
 custom_db = SqliteDatabase(os.path.join(MANAGER_PATH, 'ca_manager.db'))
 

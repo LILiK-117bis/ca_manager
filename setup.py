@@ -13,5 +13,9 @@ setup(
     install_requires=[
         'peewee',
     ],
+    scripts=[
+        'bin/ca-server',
+        'bin/ca-shell',
+    ],
     zip_safe=False
 )

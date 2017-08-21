@@ -3,7 +3,7 @@
 
 import os.path
 
-from paths import *
+from ..paths import *
 
 __doc__= """
 Module of classes to handle sign requests

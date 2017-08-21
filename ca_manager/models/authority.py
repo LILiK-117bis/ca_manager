@@ -8,16 +8,16 @@ from datetime import datetime
 import os
 import os.path
 
-from models import customModel
-from models.certificate import Certificate
+from .customModel import CustomModel
+from .certificate import Certificate
 
-from paths import *
+from ..paths import *
 
 __doc__= """
 Module of base classes to handle authorities
 """
 
-class Authority(customModel.CustomModel):
+class Authority(CustomModel):
 
     signed_certificates = ReverseGFK(Certificate, 'authority_type', 'authority_id')
 

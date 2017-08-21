@@ -6,12 +6,12 @@ from playhouse.gfk import *
 import os
 import json
 
-from models import customModel
+from .customModel import CustomModel
 
-from paths import *
+from ..paths import *
 
 
-class Certificate(customModel.CustomModel):
+class Certificate(CustomModel):
     """
     """
 

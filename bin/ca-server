@@ -8,7 +8,7 @@ import sys
 import time
 import uuid
 
-from paths import *
+from ca_manager.paths import *
 
 __doc__= """
 Procedure to spawn a shell for automation, used by Ansible
