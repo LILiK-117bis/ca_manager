@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from fqdn import FQDN
 import json
 import logging
 import os.path
@@ -69,6 +70,10 @@ def main():
         request = metarequest['request']
         request_id = str(uuid.uuid4())
         logger.info('Request id %s', request_id)
+
+        if request['keyType'].endswith('_host'):
+            if not FQDN(request['hostName']).is_valid:
+                exit_bad('bad FQDN: <%s>' % (request['hostName'],))
 
         logger.info('Writing request to target directory')
         with open(os.path.join(REQUESTS_PATH, request_id), 'w') as stream:
