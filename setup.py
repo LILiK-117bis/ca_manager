@@ -14,6 +14,7 @@ setup(
         'ca_manager.models',
     ],
     install_requires=[
+        'fqdn',
         'peewee',
     ],
     scripts=[
