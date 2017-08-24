@@ -55,7 +55,7 @@ def main():
     else:
         request_data = sys.stdin.read(10000)
 
-    logger.info('Got request data: %s', request_data)
+    logger.info('Got request data: <%s>', (request_data,))
 
     try:
         metarequest = json.loads(request_data)
@@ -69,7 +69,7 @@ def main():
         logger.info('Got a sign request')
         request = metarequest['request']
         request_id = str(uuid.uuid4())
-        logger.info('Request id %s', request_id)
+        logger.info('Request id %s', (request_id,))
 
         if request['keyType'].endswith('_host'):
             if not FQDN(request['hostName']).is_valid:
@@ -86,7 +86,7 @@ def main():
         logger.info('Got a GET request')
         request_id = metarequest['requestID']
 
-        logger.info('Request id: %s', request_id)
+        logger.info('Request id: %s', (request_id,))
         result_path = os.path.join(RESULTS_PATH, request_id)
 
         while not os.path.exists(result_path):
