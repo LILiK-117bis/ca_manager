@@ -9,7 +9,10 @@ setup(
     author='LILiK',
     url='https://github.com/LILiK-117bis/ca_manager',
     license='GPL3',
-    packages=['ca_manager'],
+    packages=[
+        'ca_manager',
+        'ca_manager.models',
+    ],
     install_requires=[
         'peewee',
     ],
