@@ -82,6 +82,7 @@ class SSHAuthority(Authority):
         """
         # check if the public key exists
         if not self:
+            self.isRoot = True
             # let ssh-keygen do its job
             subprocess.check_output(['ssh-keygen',
                 '-f', self.path,
