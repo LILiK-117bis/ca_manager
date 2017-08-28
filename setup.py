@@ -21,5 +21,8 @@ setup(
         'bin/ca-server',
         'bin/ca-shell',
     ],
+    data_files=[
+        ('/etc/ca_manager', ['defaults.cfg']),
+    ],
     zip_safe=False
 )
