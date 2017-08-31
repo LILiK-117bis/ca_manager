@@ -144,3 +144,10 @@ class CertificateLookup:
         Iterate over all certificate request in OUTPUT_PATH
         """
         return Certificate.select().iterator()
+
+    def latest(self, n=5):
+        """
+        Get the latest n certificates; default n=5
+        """
+
+        return Certificate.select().order_by(-Certificate.date_issued).limit(n)
