@@ -85,7 +85,7 @@ class SSLAuthority(Authority):
             subprocess.check_output(['openssl',
                 'req',
                 '-extensions', 'v3_root_ca',
-                '-config', 'openssl-config/openssl.cnf',
+                '-config', os.path.join(os.path.dirname(os.path.abspath(getsourcefile(lambda:0))), '../openssl-config/openssl.cnf'),
                 '-new',
                 '-x509',
                 '-days', self.root_ca_validity,

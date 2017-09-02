@@ -22,9 +22,9 @@ setup(
         'bin/ca-shell',
     ],
     package_data={
-        'ca_manager.models': [
+        'ca_manager': [
             'openssl-config/*.cnf',
-        ,
+        ]
     },
     zip_safe=False
 )
