@@ -45,6 +45,12 @@ class Certificate(CustomModel):
                 help_text = 'certificate\'s path on filesystem',
                 )
 
+    revoked = BooleanField(
+                index = True,
+                default = False,
+                help_text = 'certificate lifecycle state',
+                )
+
     def __repr__(self):
         msg = """<%s:%s> for %s
                 signed %s by %s"""

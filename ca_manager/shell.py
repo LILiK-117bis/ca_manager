@@ -91,6 +91,7 @@ class CAManagerShell(cmd.Cmd):
             Receiver: %s
             Certificate Serial: %s
             Validity Interval: %s
+            Revoked: %s
             """
 
             request_info = (
@@ -100,6 +101,7 @@ class CAManagerShell(cmd.Cmd):
                     cert.receiver,
                     cert.serial_number,
                     cert.validity_interval,
+                    cert.revoked,
                     )
 
             print(cert_description % cert_info)
@@ -219,6 +221,20 @@ class CAManagerShell(cmd.Cmd):
             authority_id, request_id  = argv[0], argv[1]
 
             sign_request(self.ca_manager, request_id, authority_id)
+
+    def do_revoke_certificates(self, l):
+        'Revoke the issued certificates: REVOKE_CERTIFICATE certificate_id ...'
+        argv = l.split()
+        argc = len(argv)
+
+        # argument number is too low
+        if argc < 1:
+            print("Usage: REVOKE_CERTIFICATE certificate_id ...")
+
+        for item in argv:
+            cert = self.ca_manager.certificate[item]
+            cert.revoked = True
+            cert.save()
 
     def common_complete_request(self, text, line, begidx, endidx, check_argc=2):
         argv = ("%send"%line).split()
