@@ -6,8 +6,12 @@ import os
 
 config = configparser.ConfigParser()
 
-config.readfp(open('defaults.cfg'))
-config.read(['ca_manager.cfg', os.path.expanduser('~/.ca_manager.cfg')])
+config.read_file(open('defaults.cfg'))
+config.read([
+    '/etc/ca_manager/defaults.cfg',
+    '/etc/ca_manager/ca_manager.cfg',
+    os.path.expanduser('~/.ca_manager.cfg'),
+])
 
 MANAGER_PATH = config['PATHS']['manager_path']
 REQUESTS_PATH = config['PATHS']['requests_path']

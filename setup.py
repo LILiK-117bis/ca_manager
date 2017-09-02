@@ -22,7 +22,7 @@ setup(
         'bin/ca-shell',
     ],
     data_files=[
-        ('/etc/ca_manager', ['defaults.cfg']),
+        ('/etc/ca_manager', ['ca_manager/defaults.cfg']),
     ],
     zip_safe=False
 )
