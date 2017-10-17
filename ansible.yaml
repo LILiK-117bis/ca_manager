@@ -1,0 +1,67 @@
+---
+# This is an example of how to use Ansible with the ca-server shell.
+# In this playbook we assume that you are requesting a ssh-host certificate
+# to be used by the host `machine.example.com` and that the server hosting
+# the ca-server shell is in your inventory under the name `ca_server`.
+#
+# We are using ed25519 as our preferred algorithm but any other one may be
+# just right, be sure to change both the key and certificate destination.
+#
+- name: Read host public key
+  slurp:
+  src: "/etc/ssh/ssh_host_ed25519_key.pub"
+  register: vm_public_key
+
+- debug:
+  var: vm_public_key['content']
+  verbosity: 2
+
+- name: generate host request
+  set_fact:
+  ca_request:
+    type: 'sign_request'
+    request:
+      keyType: 'ssh_host'
+      hostName: 'machine.example.com'
+      keyData: "{{ vm_public_key['content'] | b64decode | replace('\n', '')}}"
+
+- debug:
+  var: ca_request | to_json
+  verbosity: 2
+
+- raw: "{{ ca_request | to_json }}"
+  delegate_to: ca_server
+  delegate_facts: True
+  register: request_result
+  failed_when: "( request_result.stdout | string | from_json ).failed"
+
+- set_fact:
+    request_output: "{{ request_result.stdout | string | from_json }}"
+
+- debug:
+    var: request_output
+    verbosity: 2
+
+- debug:
+    msg: "Please manualy confirm sign request with id {{ request_output.requestID }}"
+
+- name: generate get request
+  set_fact:
+    ca_request:
+      type: 'get_certificate'
+      requestID: '{{ request_output.requestID }}'
+
+- raw: "{{ ca_request | to_json }}"
+  delegate_to: ca_server
+  delegate_facts: True
+  register: request_result
+  failed_when: "( request_result.stdout | string | from_json ).failed"
+
+- set_fact:
+    cert_key: "{{ request_result.stdout | string | from_json }}"
+
+- name: write certificate to host
+  copy:
+    content: "{{ cert_key.result }}"
+    dest: "/etc/ssh/ssh_host_ed25519_key-cert.pub"
+  register: set_pub_key

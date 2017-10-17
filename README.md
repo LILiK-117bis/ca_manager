@@ -19,6 +19,8 @@ This is a shell for a user, the shell only reads the input from the user and ret
 
 The server logs can be found at `/home/request/request_server.log`
 
+A playbook example can be found in `ansible.yaml`
+
 #### ca-shell
 
 This is a shell for a user, the shell limits the commands to the one we are interested, like generating a SSH/SSL CA, signing keys.
