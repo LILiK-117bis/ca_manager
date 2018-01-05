@@ -95,7 +95,7 @@ class CAManagerShell(cmd.Cmd):
             Revoked: %s
             """
 
-            request_info = (
+            cert_info = (
                     cert.cert_id,
                     cert.signed_by,
                     cert.date_issued,
