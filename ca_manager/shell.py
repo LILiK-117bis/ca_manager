@@ -240,17 +240,17 @@ class CAManagerShell(cmd.Cmd):
     def common_complete_request(self, text, line, begidx, endidx, check_argc=2):
         argv = ("%send" % line).split()
         argc = len(argv)
-        if check_argc == None or argc == check_argc:
+        if check_argc is None or argc == check_argc:
             return [request.req_id for i, request in enumerate(self.ca_manager.request) if request.req_id.startswith(text) and request.req_id not in argv[1:]]
 
     def common_complete_ca(self, text, line, begidx, endidx, check_argc=2):
         argc = len(("%send"%line).split())
-        if check_argc == None or argc == check_argc:
+        if check_argc is None or argc == check_argc:
             return [ca_item.ca_id for i, ca_item  in enumerate(self.ca_manager.ca) if ca_item.ca_id.startswith(text)]
 
     def common_complete_certificate(self, text, line, begidx, endidx, check_argc=2):
         argc = len(("%send"%line).split())
-        if check_argc == None or argc == check_argc:
+        if check_argc is None or argc == check_argc:
             return [certificate.cert_id for i, certificate  in enumerate(self.ca_manager.certificate) if certificate.cert_id.startswith(text)]
 
     def complete_drop_request(self, text, line, begidx, endidx):
