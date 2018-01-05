@@ -13,6 +13,7 @@ __doc__ = """
 Class to make a shell and interact with the user
 """
 
+
 class CAManagerShell(cmd.Cmd):
     intro = """# LILiK CA Manager #
     Welcome to the certification authority shell.
@@ -167,11 +168,11 @@ class CAManagerShell(cmd.Cmd):
         ca_id = argv[0]
         name = argv[1]
         new_auth = SSHAuthority(
-                ca_id = ca_id,
-                name = name,
-                serial = 0,
-                active = True,
-                creation_date = datetime.now(),
+                ca_id=ca_id,
+                name=name,
+                serial=0,
+                active=True,
+                creation_date=datetime.now(),
                 )
 
         new_auth.generate()
@@ -190,11 +191,11 @@ class CAManagerShell(cmd.Cmd):
         ca_id = argv[0]
         name = argv[1]
         new_auth = SSLAuthority(
-                ca_id = ca_id,
-                name = name,
-                serial = 0,
-                active = True,
-                creation_date = datetime.now(),
+                ca_id=ca_id,
+                name=name,
+                serial=0,
+                active=True,
+                creation_date=datetime.now(),
                 )
 
         new_auth.generate()
@@ -218,7 +219,7 @@ class CAManagerShell(cmd.Cmd):
                 print("Available request")
                 print_available_requests(self.ca_manager)
         else:
-            authority_id, request_id  = argv[0], argv[1]
+            authority_id, request_id = argv[0], argv[1]
 
             sign_request(self.ca_manager, request_id, authority_id)
 
@@ -237,7 +238,7 @@ class CAManagerShell(cmd.Cmd):
             cert.save()
 
     def common_complete_request(self, text, line, begidx, endidx, check_argc=2):
-        argv = ("%send"%line).split()
+        argv = ("%send" % line).split()
         argc = len(argv)
         if check_argc == None or argc == check_argc:
             return [request.req_id for i, request in enumerate(self.ca_manager.request) if request.req_id.startswith(text) and request.req_id not in argv[1:]]
@@ -266,15 +267,15 @@ class CAManagerShell(cmd.Cmd):
 
     def complete_sign_request(self, text, line, begidx, endidx):
         results = ''
-        argc = len(("%send"%line).split())
+        argc = len(("%send" % line).split())
 
         if argc == 2:
-            results = [ca_item.ca_id for i, ca_item  in enumerate(self.ca_manager.ca) if ca_item.ca_id.startswith(text)]
+            results = [ca_item.ca_id for i, ca_item in enumerate(self.ca_manager.ca) if ca_item.ca_id.startswith(text)]
         elif argc == 3:
             try:
                 ca = self.ca_manager.ca[line.split()[1]]
             except Exception as e:
-                print ("Error: %s"%e)
+                print("Error: %s" % e)
                 return
 
             results = [request.req_id for i, request in enumerate(self.ca_manager.request) if request.req_id.startswith(text) and request.__class__ in ca.request_allowed]
@@ -283,7 +284,7 @@ class CAManagerShell(cmd.Cmd):
     def complete(self, text, state):
         results = super().complete(text, state)
         if results is not None:
-            return "%s "%results
+            return "%s " % results
         return results
 
     def do_quit(self, l):
@@ -292,8 +293,9 @@ class CAManagerShell(cmd.Cmd):
 
 
 def print_available_authorities(ca_manager):
-    for i, ca  in enumerate(ca_manager.ca):
+    for i, ca in enumerate(ca_manager.ca):
         print(ca)
+
 
 def print_available_requests(ca_manager):
     for i, request in enumerate(ca_manager.request):
