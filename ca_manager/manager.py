@@ -4,6 +4,7 @@ import hashlib
 import os
 import os.path
 import shutil
+import subprocess
 
 from playhouse.gfk import *
 
@@ -92,10 +93,13 @@ def sign_request(ca_manager, request_id, authority_id):
         print ("user abort")
         return
 
-    cert_path = authority.sign(request)
-    del ca_manager.request[request_id]
+    try:
+        cert_path = authority.sign(request)
+        del ca_manager.request[request_id]
 
-    shutil.copy(cert_path, os.path.join(RESULTS_PATH, request.req_id))
+        shutil.copy(cert_path, os.path.join(RESULTS_PATH, request.req_id))
+    except subprocess.CalledProcessError:
+        print('Could not sign certificate request')
 
 
 if __name__ == '__main__':
