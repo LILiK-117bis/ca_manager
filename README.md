@@ -27,3 +27,12 @@ This is a shell for a user, the shell limits the commands to the one we are inte
 
 [it's true]: https://user-images.githubusercontent.com/4076473/27771545-82c82628-5f50-11e7-91f2-86840a57dc07.jpg "For some definition of law"
 
+### Debug
+
+You can provide a request to the server using the command
+
+```bash
+python test/make_ssh_user_request.py /path/to/your_public_key.pub your_name | ca-server
+```
+
+This will work for any script in the `test` directory
