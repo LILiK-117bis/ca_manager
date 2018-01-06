@@ -17,8 +17,10 @@ from .models.certificate import Certificate
 from .paths import *
 
 __doc__ = """
-Define classes to interact with certificate requests and Certification Authority
+Define classes to interact with certificate
+requests and Certification Authority
 """
+
 
 class CAManager(object):
     """
@@ -45,6 +47,7 @@ class CAManager(object):
     def ssl_ca_dir(self):
         return os.path.join(self.path, 'ssl_cas')
 
+
 def init_manager(paths):
     """
     Initiate the manager by creating the
@@ -68,6 +71,7 @@ def init_manager(paths):
         if not os.path.exists(dirpath):
             os.mkdir(dirpath)
 
+
 def sign_request(ca_manager, request_id, authority_id):
 
     authority, request = None, None
@@ -90,7 +94,7 @@ def sign_request(ca_manager, request_id, authority_id):
     print("You are about to sign the following request:\n  %s\nwith the following CA:\n  %s"%(request, authority))
     confirm = input('Proceed? (type yes)> ')
     if confirm != 'yes':
-        print ("user abort")
+        print("user abort")
         return
 
     try:
@@ -111,7 +115,6 @@ if __name__ == '__main__':
         OUTPUT_PATH,
         RESULTS_PATH,
         ])
-
 
     ca_manager = CAManager(MANAGER_PATH)
 

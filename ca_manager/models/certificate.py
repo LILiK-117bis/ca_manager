@@ -20,35 +20,35 @@ class Certificate(CustomModel):
     authority = GFKField('authority_type', 'authority_id')
 
     cert_id = CharField(
-                index = True,
-                unique = True,
-                help_text = 'id shared with the sign request',
+                index=True,
+                unique=True,
+                help_text='id shared with the sign request',
                 )
 
     date_issued = DateTimeField(
-                help_text = 'certificate\'s issue date',
+                help_text='certificate\'s issue date',
                 )
 
     receiver = CharField(
-                help_text = 'hostname or list of user for this certificate',
+                help_text='hostname or list of user for this certificate',
                 )
 
     serial_number = IntegerField(
-                help_text = 'certificate\'s progressive number',
+                help_text='certificate\'s progressive number',
                 )
 
     validity_interval = CharField(
-                help_text = 'how long will the certificate be valid',
+                help_text='how long will the certificate be valid',
                 )
 
     path = CharField(
-                help_text = 'certificate\'s path on filesystem',
+                help_text='certificate\'s path on filesystem',
                 )
 
     revoked = BooleanField(
-                index = True,
-                default = False,
-                help_text = 'certificate lifecycle state',
+                index=True,
+                default=False,
+                help_text='certificate lifecycle state',
                 )
 
     def __repr__(self):

@@ -13,9 +13,10 @@ from .certificate import Certificate
 
 from ..paths import *
 
-__doc__= """
+__doc__ = """
 Module of base classes to handle authorities
 """
+
 
 class Authority(CustomModel):
 
@@ -27,25 +28,25 @@ class Authority(CustomModel):
     active = BooleanField()
 
     ca_id = CharField(
-            index = True,
-            unique = True,
+            index=True,
+            unique=True,
             )
 
     creation_date = DateTimeField(
-            help_text = 'authority creation date',
+            help_text='authority creation date',
             )
 
     name = CharField(
-            index = True,
-            help_text = 'authority descriptive name',
+            index=True,
+            help_text='authority descriptive name',
             )
 
     serial = IntegerField(
-            help_text = 'next certificate serial number',
+            help_text='next certificate serial number',
             )
 
     isRoot = BooleanField(
-            help_text = 'is root authority?',
+            help_text='is root authority?',
             )
 
     def __bool__(self):
@@ -67,12 +68,12 @@ class Authority(CustomModel):
             stream.write(request.key_data)
 
         cert = Certificate(
-                authority = self,
-                cert_id = request.req_id,
-                date_issued = datetime.now(),
-                receiver = request.receiver,
-                serial_number = self.serial,
-                path = request.cert_destination,
+                authority=self,
+                cert_id=request.req_id,
+                date_issued=datetime.now(),
+                receiver=request.receiver,
+                serial_number=self.serial,
+                path=request.cert_destination,
                 )
 
         cert.validity_interval = self.generate_certificate(request)
@@ -85,4 +86,4 @@ class Authority(CustomModel):
         raise NotImplementedError()
 
     def __repr__(self):
-        return ( "%s %s (%s), created on %s" % ( self.__class__.__name__, self.ca_id, self.name, self.creation_date) )
+        return ('%s %s (%s), created on %s' % (self.__class__.__name__, self.ca_id, self.name, self.creation_date))

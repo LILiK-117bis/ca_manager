@@ -14,6 +14,7 @@ from .models.request import SignRequest
 
 from .paths import *
 
+
 class CALookup:
     """
     Proxy to interact with authorities
@@ -30,10 +31,9 @@ class CALookup:
 
     def __iter__(self):
 
-        all_the_authorities = [ auth.select().iterator() for auth in self.allowed_auth]
+        all_the_authorities = [auth.select().iterator() for auth in self.allowed_auth]
 
         return chain.from_iterable(all_the_authorities)
-
 
     def __getitem__(self, ca_id):
 
@@ -43,6 +43,7 @@ class CALookup:
                 return ca
             except authority_type.DoesNotExist:
                 continue
+
 
 class RequestLookup:
     """
@@ -122,6 +123,7 @@ class RequestLookup:
     @property
     def ssl(self):
         pass
+
 
 class CertificateLookup:
     """

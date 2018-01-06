@@ -10,16 +10,16 @@ import uuid
 
 from ca_manager.paths import *
 
-__doc__= """
+__doc__ = """
 Procedure to spawn a shell for automation, used by Ansible
 """
 
-logfile= os.path.join(REQUEST_USER_HOME, 'request_server.log')
+logfile = os.path.join(REQUEST_USER_HOME, 'request_server.log')
 
 logging.basicConfig(
-        filename = logfile,
-        format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        level = logging.INFO,
+        filename=logfile,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=logging.INFO,
         )
 
 logger = logging.getLogger('request_server')
@@ -31,6 +31,7 @@ def exit_good(response):
     response['status'] = 'ok'
     print(json.dumps(response))
     sys.exit(0)
+
 
 def exit_bad(reason):
     logger.info('JSON rejected, send error; error %s', reason)
@@ -80,7 +81,7 @@ def main():
             stream.write(json.dumps(request))
 
         logger.info('Stopping shell')
-        exit_good({ 'requestID': request_id })
+        exit_good({'requestID': request_id})
 
     elif metarequest['type'] == 'get_certificate':
         logger.info('Got a GET request')
@@ -96,7 +97,7 @@ def main():
             result_data = stream.read()
 
         logger.info('Stopping shell')
-        exit_good({ 'requestID': request_id, 'result': result_data })
+        exit_good({'requestID': request_id, 'result': result_data})
 
     else:
         logger.info('Request type not supported: %s', metarequest['type'])
