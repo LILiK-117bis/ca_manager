@@ -80,6 +80,7 @@ class Authority(CustomModel):
 
         cert.save()
         self.serial += 1
+        self.save()
         return cert.path
 
     def generate_certificate(self, request):
