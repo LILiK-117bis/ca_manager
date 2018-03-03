@@ -7,7 +7,7 @@ import os
 import os.path
 
 from .models.ssh import SSHAuthority, UserSSHRequest, HostSSHRequest
-from .models.ssl import SSLAuthority, HostSSLRequest, CASSLRequest
+from .models.ssl import SSLAuthority, UserSSLRequest, HostSSLRequest, CASSLRequest
 
 from .models.certificate import Certificate
 from .models.request import SignRequest
@@ -107,6 +107,14 @@ class RequestLookup:
                         requester,
                         key_data,
                         )
+
+            elif 'ssl_user' in values:
+                return UserSSLRequest(
+                        request_id,
+                        requester,
+                        key_data,
+                        )
+
             elif 'ssl_ca' in values:
                 return CASSLRequest(
                         request_id,
