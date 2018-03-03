@@ -43,5 +43,9 @@ class SignRequest(object):
     @property
     def fields(self):
         return [
-            ('Hostname', self.host_name)
+            ('Hostname', self.receiver)
         ]
+
+    @property
+    def receiver(self):
+        raise NotImplementedError()
