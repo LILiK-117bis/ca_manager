@@ -81,8 +81,10 @@ class RequestLookup:
             )
 
             requester = request_data.get('userName', None) or request_data.get('hostName', None) or request_data.get('caName', None)
+            assert requester
             root_requested = request_data.get('rootRequested', False)
             key_data = request_data.get('keyData', None)
+            assert key_data
 
             values = request_data.values()
 
