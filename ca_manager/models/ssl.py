@@ -37,6 +37,28 @@ class HostSSLRequest(SignRequest):
         return self.host_name
 
 
+class UserSSLRequest(SignRequest):
+    def __init__(self, req_id, user_name, key_data):
+        super(HostSSLRequest, self).__init__(req_id)
+
+        self.user_name = user_name
+        self.key_data = key_data
+
+    @property
+    def name(self):
+        return 'User: {}'.format(self.user_name)
+
+    @property
+    def fields(self):
+        return [
+            ('User name', self.user_name)
+        ]
+
+    @property
+    def receiver(self):
+        return self.user_name
+
+
 class CASSLRequest(SignRequest):
     def __init__(self, req_id, ca_name, key_data):
         super(CASSLRequest, self).__init__(req_id)
