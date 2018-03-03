@@ -82,7 +82,11 @@ class CASSLRequest(SignRequest):
 
 
 class SSLAuthority(Authority):
-    request_allowed = [HostSSLRequest, CASSLRequest, ]
+    request_allowed = [
+        HostSSLRequest,
+        UserSSLRequest,
+        CASSLRequest,
+    ]
 
     ca_key_algorithm = 'des3'
     key_length = '4096'
