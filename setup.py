@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='ca_manager',
-    version='0.1',
+    version='0.3',
     description='shell interface for certification authority management',
     author='LILiK',
     url='https://github.com/LILiK-117bis/ca_manager',
