@@ -17,7 +17,7 @@ import json
 
 class HostSSLRequest(SignRequest):
     def __init__(self, req_id, host_name, key_data):
-        super(HostSSLRequest, self).__init__(req_id)
+        super().__init__(req_id)
 
         self.host_name = host_name
         self.key_data = key_data
@@ -39,7 +39,7 @@ class HostSSLRequest(SignRequest):
 
 class UserSSLRequest(SignRequest):
     def __init__(self, req_id, user_name, key_data):
-        super(HostSSLRequest, self).__init__(req_id)
+        super().__init__(req_id)
 
         self.user_name = user_name
         self.key_data = key_data
@@ -61,7 +61,7 @@ class UserSSLRequest(SignRequest):
 
 class CASSLRequest(SignRequest):
     def __init__(self, req_id, ca_name, key_data):
-        super(CASSLRequest, self).__init__(req_id)
+        super().__init__(req_id)
 
         self.ca_name = ca_name
         self.key_data = key_data
