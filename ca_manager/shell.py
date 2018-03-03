@@ -97,7 +97,7 @@ class CAManagerShell(cmd.Cmd):
 
             cert_info = (
                     cert.cert_id,
-                    cert.signed_by,
+                    cert.authority,
                     cert.date_issued,
                     cert.receiver,
                     cert.serial_number,
