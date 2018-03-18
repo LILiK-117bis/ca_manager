@@ -92,18 +92,21 @@ class SSLAuthority(Authority):
     key_length = '4096'
 
     key_algorithm = 'sha256'
-    root_ca_validity = '3650'
-    ca_validity = '1825'
-    cert_validity = '365'
+    root_ca_validity = 3650
+    ca_validity = 1825
+    cert_validity = 365
 
-    def generate(self):
+    def generate(self, isRoot=None):
         if os.path.exists(self.path):
             raise ValueError('A CA with the same id and type already exists')
-        confirm = input('Is a root CA? [y/N]> ')
-        if confirm == 'y':
-            self.isRoot = True
+        if isRoot != None:
+            self.isRoot = isRoot
         else:
-            self.isRoot = False
+            confirm = input('Is a root CA? [y/N]> ')
+            if confirm == 'y':
+                self.isRoot = True
+            else:
+                self.isRoot = False
 
         subprocess.check_output(['openssl',
                                  'genrsa',
@@ -113,22 +116,32 @@ class SSLAuthority(Authority):
         if self.isRoot:
             subprocess.check_output(['openssl',
                                      'req',
-                                     '-extensions', 'v3_root_ca',
-                                     '-config', os.path.join(os.path.dirname(os.path.abspath(getsourcefile(lambda:0))), '../openssl-config/openssl.cnf'),
+                                    #  '-extensions', 'v3_ca',
+                                     '-config', os.path.join(os.path.dirname(os.path.abspath(getsourcefile(lambda:0))), '../openssl-config/openssl-root.cnf'),
                                      '-new',
                                      '-x509',
-                                     '-days', self.root_ca_validity,
+                                     '-days', str(self.root_ca_validity),
                                      '-key', self.path,
                                      # '-extensions', 'v3_ca'
                                      '-out', '%s.pub' % self.path,
                                      # '-config', "%s.conf"%self.path
                                      ])
         else:
+
+# openssl req -config intermediate/openssl.cnf -new -sha256 \
+# -key intermediate/private/inter_haritibco.key.pem \
+# -out intermediate/csr/inter_haritibco.csr.pem
+# cd /root/ca
+
+
+
             subprocess.check_output(['openssl',
                                      'req',
+                                    #  '-extensions', 'v3_intermediate_ca',
+                                     '-config', os.path.join(os.path.dirname(os.path.abspath(getsourcefile(lambda:0))), '../openssl-config/openssl-intermediate.cnf'),
                                      '-new',
-                                     #'-x509',
-                                     # '-days', self.ca_validity,
+                                    #  '-x509',
+                                     '-days', str(self.ca_validity),
                                      '-key', self.path,
                                      # '-extensions', 'v3_ca'
                                      '-out', '%s.csr' % self.path,
@@ -144,8 +157,8 @@ class SSLAuthority(Authority):
             print('Please sign the following request:')
             print(json.dumps(request))
 
-        with open(self.path + '.serial', 'w') as stream:
-            stream.write(str(0))
+        if not self.isRoot:
+            return request
 
     def generate_certificate(self, request):
         """
@@ -163,8 +176,10 @@ class SSLAuthority(Authority):
 
         subprocess.check_output(['openssl',
                                  'x509',
+                                 '-extensions', 'v3_intermediate_ca' if self.isRoot else 'server_cert',
+                                 '-extfile', os.path.join(os.path.dirname(os.path.abspath(getsourcefile(lambda:0))), '../openssl-config/openssl-root.cnf' if self.isRoot else '../openssl-config/openssl-intermediate.cnf'),
                                  '-req',
-                                 '-days', self.ca_validity,
+                                 '-days', str(self.ca_validity if self.isRoot else self.cert_validity),
                                  '-in', pub_key_path,
                                  '-CA', '%s.pub' % self.path,
                                  '-CAkey', self.path,

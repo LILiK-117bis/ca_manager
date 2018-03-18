@@ -102,8 +102,9 @@ def sign_request(ca_manager, request_id, authority_id):
         del ca_manager.request[request_id]
 
         shutil.copy(cert_path, os.path.join(RESULTS_PATH, request.req_id))
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as e:
         print('Could not sign certificate request')
+        print(e)
 
 
 if __name__ == '__main__':

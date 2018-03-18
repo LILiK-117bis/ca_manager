@@ -65,8 +65,8 @@ class SSHAuthority(Authority):
 
     key_algorithm = 'ed25519'
 
-    user_validity = '+52w'
-    host_validity = '+52w'
+    user_validity = 365
+    host_validity = 365
 
     def __bool__(self):
         """
@@ -111,7 +111,7 @@ class SSHAuthority(Authority):
                                      '-s', ca_private_key,
                                      '-I', 'user_%s' % request.receiver,
                                      '-n', ','.join(login_names),
-                                     '-V', self.user_validity,
+                                     '-V', "+%dd"%self.user_validity,
                                      '-z', str(self.serial),
                                      pub_key_path])
             validity_interval = self.user_validity
@@ -122,7 +122,7 @@ class SSHAuthority(Authority):
                                      '-I', 'host_%s' % request.receiver.replace('.', '_'),
                                      '-h',
                                      '-n', request.host_name,
-                                     '-V', self.host_validity,
+                                     '-V', "+%dd"%self.host_validity,
                                      '-z', str(self.serial),
                                      pub_key_path])
             validity_interval = self.host_validity
