@@ -10,6 +10,9 @@ import uuid
 
 from ca_manager.paths import *
 
+class MyException(Exception):
+    pass
+
 __doc__ = """
 Procedure to spawn a shell for automation, used by Ansible
 """
@@ -43,8 +46,7 @@ def exit_bad(reason):
     print(json.dumps(response))
     sys.exit(0)
 
-
-def main(request_data = None):
+def handle_request(request_data = None):
 
     logger.info('Shell started')
 
@@ -65,7 +67,7 @@ def main(request_data = None):
     except:
         logger.info('"type" key not found in request')
         logger.info('Stopping shell')
-        exit_bad('bad_json')
+        raise MyException('bad_json')
 
     if metarequest['type'] == 'sign_request':
         logger.info('Got a sign request')
@@ -75,14 +77,14 @@ def main(request_data = None):
 
         if request['keyType'].endswith('_host'):
             if not FQDN(request['hostName']).is_valid:
-                exit_bad('bad FQDN: <%s>' % (request['hostName'],))
+                raise MyException('bad FQDN: <%s>' % (request['hostName'],))
 
         logger.info('Writing request to target directory')
         with open(os.path.join(REQUESTS_PATH, request_id), 'w') as stream:
             stream.write(json.dumps(request))
 
         logger.info('Stopping shell')
-        exit_good({'requestID': request_id})
+        return {'requestID': request_id}
 
     elif metarequest['type'] == 'get_certificate':
         logger.info('Got a GET request')
@@ -98,9 +100,15 @@ def main(request_data = None):
             result_data = stream.read()
 
         logger.info('Stopping shell')
-        exit_good({'requestID': request_id, 'result': result_data})
+        return {'requestID': request_id, 'result': result_data}
 
     else:
         logger.info('Request type not supported: %s', metarequest['type'])
         logger.info('Stopping shell')
-        exit_bad('unknown_type')
+        raise MyException('unknown_type')
+
+def main():
+    try:
+        exit_good(handle_request())
+    except MyException as e:
+        exit_bad(str(e))

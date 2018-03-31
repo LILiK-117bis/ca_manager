@@ -59,7 +59,7 @@ class Authority(CustomModel):
     def generate(self):
         raise NotImplementedError()
 
-    def sign(self, request):
+    def sign(self, request, password=None):
         assert type(request) in self.request_allowed
 
         # write the key data from the request into
@@ -76,7 +76,7 @@ class Authority(CustomModel):
                 path=request.cert_destination,
                 )
 
-        cert.validity_interval = self.generate_certificate(request)
+        cert.validity_interval = self.generate_certificate(request, password)
 
         cert.save()
         self.serial += 1

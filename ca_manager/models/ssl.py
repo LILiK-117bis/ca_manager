@@ -14,6 +14,77 @@ from ..paths import *
 
 import json
 
+import getpass
+from cryptography import x509
+from cryptography.x509.oid import NameOID
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
+import datetime
+
+def create_root_ca(issuer, issuer_key, validity):
+    builder = x509.CertificateBuilder()
+    builder = builder.subject_name(issuer)
+    builder = builder.issuer_name(issuer)
+    builder = builder.public_key(issuer_key.public_key())
+    builder = builder.serial_number(x509.random_serial_number())
+    builder = builder.not_valid_before(datetime.datetime.utcnow())
+    builder = builder.not_valid_after(
+            datetime.datetime.utcnow() + datetime.timedelta(days=validity))
+    builder = builder.add_extension(
+            x509.BasicConstraints(ca=True, path_length=1),
+            critical=True)
+    builder = builder.add_extension(
+            x509.AuthorityKeyIdentifier.from_issuer_public_key(issuer_key.public_key()),
+            critical=False)
+    builder = builder.add_extension(
+            x509.SubjectKeyIdentifier.from_public_key(issuer_key.public_key()),
+            critical=False)
+    return builder.sign(issuer_key, hashes.SHA256(), default_backend())
+
+
+def create_csr(subject, subject_key, is_ca=False):
+    builder = x509.CertificateSigningRequestBuilder()
+    builder = builder.subject_name(subject)
+    if is_ca:
+        builder = builder.add_extension(
+                x509.BasicConstraints(ca=True, path_length=0),
+                critical=True)
+    builder = builder.add_extension(
+            x509.SubjectKeyIdentifier.from_public_key(subject_key.public_key()),
+            critical=False)
+    return builder.sign(subject_key, hashes.SHA256(), default_backend())
+
+
+def sign_csr(csr, issuer_cert, issuer_key, validity):
+    builder = x509.CertificateBuilder()
+    builder = builder.subject_name(csr.subject)
+    builder = builder.issuer_name(issuer_cert.subject)
+    builder = builder.public_key(csr.public_key())
+    builder = builder.serial_number(x509.random_serial_number())
+    builder = builder.not_valid_before(datetime.datetime.utcnow())
+    builder = builder.not_valid_after(
+            datetime.datetime.utcnow() + datetime.timedelta(days=validity))
+    builder = builder.add_extension(
+            x509.AuthorityKeyIdentifier.from_issuer_public_key(issuer_key.public_key()),
+            critical=False)
+    for extension in csr.extensions:
+        builder = builder.add_extension(extension.value, critical=extension.critical)
+    return builder.sign(issuer_key, hashes.SHA256(), default_backend())
+
+def write_key(key, path, password):
+    with open(path, "wb") as f:
+        f.write(key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.BestAvailableEncryption(password),
+            ))
+
+def write_cert(cert, path):
+    with open(path, "wb") as f:
+        f.write(cert.public_bytes(serialization.Encoding.PEM))
+
 
 class HostSSLRequest(SignRequest):
     def __init__(self, req_id, host_name, key_data):
@@ -88,15 +159,13 @@ class SSLAuthority(Authority):
         CASSLRequest,
     ]
 
-    ca_key_algorithm = 'des3'
-    key_length = '4096'
+    key_length = 4096
 
-    key_algorithm = 'sha256'
-    root_ca_validity = 3650
-    ca_validity = 1825
+    root_ca_validity = 10 * 365
+    ca_validity = 5 * 1825
     cert_validity = 365
 
-    def generate(self, isRoot=None):
+    def generate(self, isRoot=None, password=None):
         if os.path.exists(self.path):
             raise ValueError('A CA with the same id and type already exists')
         if isRoot != None:
@@ -107,46 +176,32 @@ class SSLAuthority(Authority):
                 self.isRoot = True
             else:
                 self.isRoot = False
+        ca_key = rsa.generate_private_key(public_exponent=65537, key_size=4096,
+            backend=default_backend())
+        if password == None:
+            password = getpass.getpass('Insert CA passord:')
+        write_key(ca_key, '%s' % (self.path), password.encode('UTF-8'))
 
-        subprocess.check_output(['openssl',
-                                 'genrsa',
-                                 '-%s' % self.ca_key_algorithm,
-                                 '-out', '%s' % (self.path),
-                                 self.key_length])
         if self.isRoot:
-            subprocess.check_output(['openssl',
-                                     'req',
-                                    #  '-extensions', 'v3_ca',
-                                     '-config', os.path.join(os.path.dirname(os.path.abspath(getsourcefile(lambda:0))), '../openssl-config/openssl-root.cnf'),
-                                     '-new',
-                                     '-x509',
-                                     '-days', str(self.root_ca_validity),
-                                     '-key', self.path,
-                                     # '-extensions', 'v3_ca'
-                                     '-out', '%s.pub' % self.path,
-                                     # '-config', "%s.conf"%self.path
-                                     ])
+            ca_subject = x509.Name([
+                x509.NameAttribute(NameOID.COUNTRY_NAME, "IT"),
+                x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "Tuscany"),
+                x509.NameAttribute(NameOID.LOCALITY_NAME, "Florence"),
+                x509.NameAttribute(NameOID.ORGANIZATION_NAME, "LILiK"),
+                x509.NameAttribute(NameOID.COMMON_NAME, self.name),
+                ])
+            ca_cert = create_root_ca(issuer=ca_subject, issuer_key=ca_key, validity=self.root_ca_validity)
+            write_cert(ca_cert, '%s.pub' % self.path)
         else:
-
-# openssl req -config intermediate/openssl.cnf -new -sha256 \
-# -key intermediate/private/inter_haritibco.key.pem \
-# -out intermediate/csr/inter_haritibco.csr.pem
-# cd /root/ca
-
-
-
-            subprocess.check_output(['openssl',
-                                     'req',
-                                    #  '-extensions', 'v3_intermediate_ca',
-                                     '-config', os.path.join(os.path.dirname(os.path.abspath(getsourcefile(lambda:0))), '../openssl-config/openssl-intermediate.cnf'),
-                                     '-new',
-                                    #  '-x509',
-                                     '-days', str(self.ca_validity),
-                                     '-key', self.path,
-                                     # '-extensions', 'v3_ca'
-                                     '-out', '%s.csr' % self.path,
-                                     # '-config', "%s.conf"%self.path
-                                     ])
+            int_subject = x509.Name([
+                x509.NameAttribute(NameOID.COUNTRY_NAME, "IT"),
+                x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "Tuscany"),
+                x509.NameAttribute(NameOID.LOCALITY_NAME, "Florence"),
+                x509.NameAttribute(NameOID.ORGANIZATION_NAME, "LILiK"),
+                x509.NameAttribute(NameOID.COMMON_NAME, self.name),
+                ])
+            int_csr = create_csr(int_subject, ca_key, is_ca=True)
+            write_cert(int_csr, '%s.csr' % self.path)
             result_dict = {}
             result_dict['keyType'] = 'ssl_ca'
             result_dict['caName'] = self.ca_id
@@ -160,7 +215,7 @@ class SSLAuthority(Authority):
         if not self.isRoot:
             return request
 
-    def generate_certificate(self, request):
+    def generate_certificate(self, request, password=None):
         """
         Sign a *SSLRequest with this certification authority
         """
@@ -168,27 +223,34 @@ class SSLAuthority(Authority):
         if not os.path.exists('%s.pub' % self.path) and not self.isRoot:
             raise ValueError("The CA certificate '%s.pub' doesn't exists yet" % self.path)
 
+        if password == None:
+            password = getpass.getpass('Insert CA passord:')
+
         pub_key_path = request.destination
         cert_path = request.cert_destination
 
         with open(pub_key_path, 'w') as stream:
             stream.write(request.key_data)
 
-        subprocess.check_output(['openssl',
-                                 'x509',
-                                 '-extensions', 'v3_intermediate_ca' if self.isRoot else 'server_cert',
-                                 '-extfile', os.path.join(os.path.dirname(os.path.abspath(getsourcefile(lambda:0))), '../openssl-config/openssl-root.cnf' if self.isRoot else '../openssl-config/openssl-intermediate.cnf'),
-                                 '-req',
-                                 '-days', str(self.ca_validity if self.isRoot else self.cert_validity),
-                                 '-in', pub_key_path,
-                                 '-CA', '%s.pub' % self.path,
-                                 '-CAkey', self.path,
-                                 '-CAcreateserial',
-                                 '-out', cert_path,
-                                 '-%s' % self.key_algorithm])
+        with open(self.path, 'rb') as f:
+            ca_key_data = f.read()
+        ca_key = load_pem_private_key(ca_key_data, password.encode('UTF-8'), default_backend())
+        with open('%s.pub' % self.path, 'rb') as f:
+            ca_cert_data = f.read()
+        ca_cert = x509.load_pem_x509_certificate(ca_cert_data, default_backend())
+        with open(request.destination, 'rb') as f:
+            request_key_data = f.read()
+        int_csr = x509.load_pem_x509_csr(request_key_data, default_backend())
+        validity = self.cert_validity
+        for extension in int_csr.extensions:
+            if extension.value.ca:
+                break
+        else:
+            validity = self.ca_validity
+        cert = sign_csr(int_csr, ca_cert, ca_key, validity)
+        write_cert(cert, cert_path)
 
-        if not self.isRoot:
-            with open(cert_path, 'a') as cert_file:
-                with open('%s.pub' % self.path) as ca_cert_file:
-                    cert_file.writelines(ca_cert_file.readlines())
-        return self.ca_validity
+        with open(cert_path, 'a') as cert_file:
+            with open('%s.pub' % self.path) as ca_cert_file:
+                cert_file.writelines(ca_cert_file.readlines())
+        return validity
