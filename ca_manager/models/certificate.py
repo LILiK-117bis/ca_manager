@@ -33,7 +33,7 @@ class Certificate(CustomModel):
                 help_text='hostname or list of user for this certificate',
                 )
 
-    serial_number = IntegerField(
+    serial_number = CharField(
                 help_text='certificate\'s progressive number',
                 )
 
@@ -50,6 +50,10 @@ class Certificate(CustomModel):
                 default=False,
                 help_text='certificate lifecycle state',
                 )
+
+    def revoke(self):
+        self.revoked = True
+        self.save()
 
     def __repr__(self):
         msg = """<%s:%s> for %s

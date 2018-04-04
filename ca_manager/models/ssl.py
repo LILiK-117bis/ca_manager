@@ -41,6 +41,11 @@ def create_root_ca(issuer, issuer_key, validity):
     builder = builder.add_extension(
             x509.SubjectKeyIdentifier.from_public_key(issuer_key.public_key()),
             critical=False)
+    builder = builder.add_extension(
+            x509.CRLDistributionPoints([
+                x509.DistributionPoint([x509.UniformResourceIdentifier("http://127.0.0.1/%s.crl"%issuer.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value)], None, None, None)
+            ]),
+            critical=True)
     return builder.sign(issuer_key, hashes.SHA256(), default_backend())
 
 
@@ -69,6 +74,11 @@ def sign_csr(csr, issuer_cert, issuer_key, validity):
     builder = builder.add_extension(
             x509.AuthorityKeyIdentifier.from_issuer_public_key(issuer_key.public_key()),
             critical=False)
+    builder = builder.add_extension(
+            x509.CRLDistributionPoints([
+                x509.DistributionPoint([x509.UniformResourceIdentifier("http://127.0.0.1/%s.crl"%issuer_cert.subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value)], None, None, None)
+            ]),
+            critical=True)
     for extension in csr.extensions:
         builder = builder.add_extension(extension.value, critical=extension.critical)
     return builder.sign(issuer_key, hashes.SHA256(), default_backend())
@@ -84,6 +94,10 @@ def write_key(key, path, password):
 def write_cert(cert, path):
     with open(path, "wb") as f:
         f.write(cert.public_bytes(serialization.Encoding.PEM))
+
+def write_crl(crl, path):
+    with open(path, "wb") as f:
+        f.write(crl.tbs_certlist_bytes())
 
 
 class HostSSLRequest(SignRequest):
@@ -240,17 +254,48 @@ class SSLAuthority(Authority):
         ca_cert = x509.load_pem_x509_certificate(ca_cert_data, default_backend())
         with open(request.destination, 'rb') as f:
             request_key_data = f.read()
-        int_csr = x509.load_pem_x509_csr(request_key_data, default_backend())
+        csr = x509.load_pem_x509_csr(request_key_data, default_backend())
         validity = self.cert_validity
-        for extension in int_csr.extensions:
+        for extension in csr.extensions:
             if extension.value.ca:
                 break
         else:
             validity = self.ca_validity
-        cert = sign_csr(int_csr, ca_cert, ca_key, validity)
+        cert = sign_csr(csr, ca_cert, ca_key, validity)
         write_cert(cert, cert_path)
 
         with open(cert_path, 'a') as cert_file:
             with open('%s.pub' % self.path) as ca_cert_file:
                 cert_file.writelines(ca_cert_file.readlines())
-        return validity
+        return {'validity': validity, 'serial_number': cert.serial_number}
+
+    def generate_crl(self, password=None):
+        if password == None:
+            password = getpass.getpass('Insert CA passord:')
+
+        from cryptography.x509.oid import NameOID
+        import datetime
+        one_day = datetime.timedelta(1, 0, 0)
+
+        with open(self.path, 'rb') as f:
+            ca_key_data = f.read()
+        ca_key = load_pem_private_key(ca_key_data, password.encode('UTF-8'), default_backend())
+        builder = x509.CertificateRevocationListBuilder()
+        builder = builder.issuer_name(x509.Name([
+            x509.NameAttribute(NameOID.COMMON_NAME, self.name),
+        ]))
+        builder = builder.last_update(datetime.datetime.today())
+        builder = builder.next_update(datetime.datetime.today() + one_day)
+        for certificate in self.signed_certificates.where(Certificate.revoked):
+            revoked_cert = x509.RevokedCertificateBuilder().serial_number(
+                int(certificate.serial_number)
+            ).revocation_date(
+                datetime.datetime.today()
+            ).build(default_backend())
+            builder = builder.add_revoked_certificate(revoked_cert)
+        crl = builder.sign(
+            private_key=ca_key, algorithm=hashes.SHA256(),
+            backend=default_backend()
+        )
+        with open("%s.crl"%self.path, "wb") as f:
+            f.write(crl.public_bytes(serialization.Encoding.PEM))

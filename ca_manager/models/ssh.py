@@ -127,4 +127,4 @@ class SSHAuthority(Authority):
                                      pub_key_path])
             validity_interval = self.host_validity
 
-        return validity_interval
+        return {'validity': validity_interval}

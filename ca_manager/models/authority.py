@@ -72,11 +72,15 @@ class Authority(CustomModel):
                 cert_id=request.req_id,
                 date_issued=datetime.now(),
                 receiver=request.receiver,
-                serial_number=self.serial,
                 path=request.cert_destination,
                 )
 
-        cert.validity_interval = self.generate_certificate(request, password)
+        cert_dict = self.generate_certificate(request, password)
+        cert.validity_interval =  cert_dict['validity']
+        if 'serial_number' in cert_dict:
+            cert.serial_number = cert_dict['serial_number']
+        else:
+            cert.serial_number = self.serial
 
         cert.save()
         self.serial += 1

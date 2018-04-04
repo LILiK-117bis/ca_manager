@@ -63,3 +63,11 @@ class TestChain(TestCase):
         copyfile('%s.pub' %my_ca_manager.ca['root'].path, 'root.pem')
         copyfile('%s.pub' %my_ca_manager.ca['int'].path, 'int.pem')
         copyfile(certificate.path, 'server.pem')
+
+        certificate.revoke()
+
+        int_ca.generate_crl(password)
+        root_ca.generate_crl(password)
+
+        copyfile("%s.crl"%my_ca_manager.ca['root'].path, 'root.crl')
+        copyfile("%s.crl"%my_ca_manager.ca['int'].path, 'int.crl')
