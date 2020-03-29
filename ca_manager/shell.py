@@ -24,6 +24,9 @@ class CAManagerShell(cmd.Cmd):
     def __init__(self, ca_manager):
         super(CAManagerShell, self).__init__()
         self.ca_manager = ca_manager
+        self.intro += "Latest certs signed:\n\n"
+        for cert in self.ca_manager.certificate.latest():
+            self.intro += "%s\n" % (cert,)
 
     def do_ls_cas(self, l):
         'List the available certification authorities: LS_CA'
