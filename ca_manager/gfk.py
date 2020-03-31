@@ -24,10 +24,10 @@ Blog.tags -> select query of all tags for Blog instances
 """
 
 from peewee import *
-from peewee import BaseModel as _BaseModel
+from peewee import ModelBase as _BaseModel
 from peewee import Model as _Model
 from peewee import SelectQuery
-from peewee import UpdateQuery
+from peewee import Update as UpdateQuery
 from peewee import with_metaclass
 
 
@@ -43,26 +43,29 @@ class BaseModel(_BaseModel):
         return cls
 
 class Model(with_metaclass(BaseModel, _Model)):
-    pass
+    def __init__(self, *args, **kwargs):
+        self._obj_cache = {}
+        return super(Model, self).__init__(*args, **kwargs)
+
 
 def get_model(tbl_name):
     if tbl_name not in table_cache:
         for model in all_models:
-            if model._meta.db_table == tbl_name:
+            if model._meta.table_name == tbl_name:
                 table_cache[tbl_name] = model
                 break
     return table_cache.get(tbl_name)
 
 class BoundGFKField(object):
-    __slots__ = ('model_class', 'gfk_field')
+    __slots__ = ('model', 'gfk_field')
 
-    def __init__(self, model_class, gfk_field):
-        self.model_class = model_class
+    def __init__(self, model, gfk_field):
+        self.model = model
         self.gfk_field = gfk_field
 
     @property
     def unique(self):
-        indexes = self.model_class._meta.indexes
+        indexes = self.model._meta.indexes
         fields = set((self.gfk_field.model_type_field,
                       self.gfk_field.model_id_field))
         for (indexed_columns, is_unique) in indexes:
@@ -72,7 +75,7 @@ class BoundGFKField(object):
 
     @property
     def primary_key(self):
-        pk = self.model_class._meta.primary_key
+        pk = self.model._meta.primary_key
         if isinstance(pk, CompositeKey):
             fields = set((self.gfk_field.model_type_field,
                           self.gfk_field.model_id_field))
@@ -81,20 +84,20 @@ class BoundGFKField(object):
         return False
 
     def __eq__(self, other):
-        meta = self.model_class._meta
+        meta = self.model._meta
         type_field = meta.fields[self.gfk_field.model_type_field]
         id_field = meta.fields[self.gfk_field.model_id_field]
         return (
-            (type_field == other._meta.db_table) &
-            (id_field == other._get_pk_value()))
+            (type_field == other._meta.table_name) &
+            (id_field == other.get_id()))
 
     def __ne__(self, other):
         other_cls = type(other)
         type_field = other._meta.fields[self.gfk_field.model_type_field]
         id_field = other._meta.fields[self.gfk_field.model_id_field]
         return (
-            (type_field == other._meta.db_table) &
-            (id_field != other._get_pk_value()))
+            (type_field == other._meta.table_name) &
+            (id_field != other.get_id()))
 
 
 class GFKField(object):
@@ -105,15 +108,15 @@ class GFKField(object):
         self.att_name = '.'.join((self.model_type_field, self.model_id_field))
 
     def get_obj(self, instance):
-        data = instance._data
+        data = instance.__data__
         if data.get(self.model_type_field) and data.get(self.model_id_field):
             tbl_name = data[self.model_type_field]
-            model_class = get_model(tbl_name)
-            if not model_class:
+            model = get_model(tbl_name)
+            if not model:
                 raise AttributeError('Model for table "%s" not found in GFK '
                                      'lookup.' % tbl_name)
-            query = model_class.select().where(
-                model_class._meta.primary_key == data[self.model_id_field])
+            query = model.select().where(
+                model._meta.primary_key == data[self.model_id_field])
             return query.get()
 
     def __get__(self, instance, instance_type=None):
@@ -127,38 +130,38 @@ class GFKField(object):
 
     def __set__(self, instance, value):
         instance._obj_cache[self.att_name] = value
-        instance._data[self.model_type_field] = value._meta.db_table
-        instance._data[self.model_id_field] = value._get_pk_value()
+        instance.__data__[self.model_type_field] = value._meta.table_name
+        instance.__data__[self.model_id_field] = value.get_id()
 
 
 class ReverseGFK(object):
     def __init__(self, model, model_type_field='object_type',
                  model_id_field='object_id'):
-        self.model_class = model
+        self.model = model
         self.model_type_field = model._meta.fields[model_type_field]
         self.model_id_field = model._meta.fields[model_id_field]
 
     def __get__(self, instance, instance_type=None):
         if instance:
-            return self.model_class.select().where(
-                (self.model_type_field == instance._meta.db_table) &
-                (self.model_id_field == instance._get_pk_value())
+            return self.model.select().where(
+                (self.model_type_field == instance._meta.table_name) &
+                (self.model_id_field == instance.get_id())
             )
         else:
-            return self.model_class.select().where(
-                self.model_type_field == instance_type._meta.db_table
+            return self.model.select().where(
+                self.model_type_field == instance_type._meta.table_name
             )
 
     def __set__(self, instance, value):
-        mtv = instance._meta.db_table
-        miv = instance._get_pk_value()
+        mtv = instance._meta.table_name
+        miv = instance.get_id()
         if (isinstance(value, SelectQuery) and
-                value.model_class == self.model_class):
-            UpdateQuery(self.model_class, {
+                value.model == self.model):
+            UpdateQuery(self.model, {
                 self.model_type_field: mtv,
                 self.model_id_field: miv,
             }).where(value._where).execute()
-        elif all(map(lambda i: isinstance(i, self.model_class), value)):
+        elif all(map(lambda i: isinstance(i, self.model), value)):
             for obj in value:
                 setattr(obj, self.model_type_field.name, mtv)
                 setattr(obj, self.model_id_field.name, miv)
