@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from playhouse.gfk import *
-
 import os
 import json
 
 from .customModel import CustomModel
 
+from ..gfk import *
 from ..paths import *
 
 
@@ -51,7 +50,7 @@ class Certificate(CustomModel):
                 help_text='certificate lifecycle state',
                 )
 
-    def __repr__(self):
+    def __str__(self):
         msg = """<%s:%s> for %s
                 signed %s by %s"""
         return (

@@ -6,8 +6,6 @@ import os.path
 import shutil
 import subprocess
 
-from playhouse.gfk import *
-
 from .lookup import CALookup, RequestLookup, CertificateLookup
 
 from .models.ssh import SSHAuthority
