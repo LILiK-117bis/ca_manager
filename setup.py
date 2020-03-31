@@ -15,7 +15,7 @@ setup(
     ],
     install_requires=[
         'fqdn',
-        'peewee<3',
+        'peewee>=3',
     ],
     scripts=[
         'bin/ca-server',
