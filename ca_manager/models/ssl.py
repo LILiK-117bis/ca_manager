@@ -14,6 +14,12 @@ import json
 
 
 class HostSSLRequest(SignRequest):
+    x509_extensions = {
+        'nsCertType': 'server',
+        'keyUsage': 'digitalSignature,keyEncipherment',
+        'extendedKeyUsage': 'serverAuth'
+    }
+
     def __init__(self, req_id, host_name, key_data):
         super().__init__(req_id)
 
@@ -36,6 +42,12 @@ class HostSSLRequest(SignRequest):
 
 
 class UserSSLRequest(SignRequest):
+    x509_extensions = {
+        'nsCertType': 'client',
+        'keyUsage': 'digitalSignature',
+        'extendedKeyUsage': 'clientAuth'
+    }
+
     def __init__(self, req_id, user_name, key_data):
         super().__init__(req_id)
 
@@ -159,16 +171,26 @@ class SSLAuthority(Authority):
         with open(pub_key_path, 'w') as stream:
             stream.write(request.key_data)
 
-        subprocess.check_output(['openssl',
-                                 'x509',
-                                 '-req',
-                                 '-days', self.ca_validity,
-                                 '-in', pub_key_path,
-                                 '-CA', '%s.pub' % self.path,
-                                 '-CAkey', self.path,
-                                 '-CAcreateserial',
-                                 '-out', cert_path,
-                                 '-%s' % self.key_algorithm])
+
+        cmd = ['openssl',
+               'x509',
+               '-req',
+               '-days', self.ca_validity,
+               '-in', pub_key_path,
+               '-CA', '%s.pub' % self.path,
+               '-CAkey', self.path,
+               '-CAcreateserial',
+               '-out', cert_path,
+               '-%s' % self.key_algorithm]
+
+        if isinstance(request, (UserSSLRequest, HostSSLRequest)):
+            cmd += ['-extfile', '-']
+            ext_string = '\n'.join(
+                "{} = {}".format(k, v) for k, v in request.x509_extensions.items()
+            )
+            subprocess.check_output(cmd, input=ext_string.encode())
+        else:
+            subprocess.check_output(cmd)
 
         if not self.isRoot:
             with open(cert_path, 'a') as cert_file:
