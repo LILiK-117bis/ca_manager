@@ -1,4 +1,1 @@
-appdirs==1.4.0
-packaging==16.8
 peewee==3.13.2
-six==1.10.0
