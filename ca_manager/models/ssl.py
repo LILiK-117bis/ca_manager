@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-from inspect import getsourcefile
 import subprocess
 
 from .authority import Authority
@@ -15,7 +14,6 @@ import json
 
 class HostSSLRequest(SignRequest):
     x509_extensions = {
-        'nsCertType': 'server',
         'keyUsage': 'digitalSignature,keyEncipherment',
         'extendedKeyUsage': 'serverAuth',
     }
@@ -43,7 +41,6 @@ class HostSSLRequest(SignRequest):
 
 class UserSSLRequest(SignRequest):
     x509_extensions = {
-        'nsCertType': 'client',
         'keyUsage': 'digitalSignature',
         'extendedKeyUsage': 'clientAuth',
     }
@@ -70,6 +67,15 @@ class UserSSLRequest(SignRequest):
 
 
 class CASSLRequest(SignRequest):
+    x509_extensions = {
+        'subjectKeyIdentifier': 'hash',
+        'authorityKeyIdentifier': 'keyid:always, issuer',
+        'basicConstraints': 'critical, CA:true',
+        'keyUsage': 'cRLSign, keyCertSign',
+        'subjectAltName': 'email:copy',
+        'issuerAltName': 'issuer:copy',
+    }
+
     def __init__(self, req_id, ca_name, key_data):
         super().__init__(req_id)
 
@@ -121,8 +127,9 @@ class SSLAuthority(Authority):
         cmd = [
             'openssl',
             'genpkey',
+            '-aes256',
             '-algorithm', 'ED25519',
-            '-out', self.path,
+            '-out', "{}.key".format(self.path),
         ]
 
         subprocess.check_output(cmd)
@@ -143,16 +150,18 @@ class SSLAuthority(Authority):
                 'subjectAltName': 'email:copy',
                 'issuerAltName': 'issuer:copy',
             }
-            ext_string = '\n'.join(
-                "{} = {}".format(k, v) for k, v in x509_ext.items()
-            )
+
             cmd += [
                 '-x509',
                 '-days', self.root_ca_validity,
                 '-out', "{}.crt".format(self.path),
-                '-extfile', '-',
-            ]
-            subprocess.check_ourput(cmd, input=ext_string.encode())
+              ]
+
+            for k, v in x509_ext.items():
+                cmd += ['-addext', "{}={}".format(k, v)]
+
+            subprocess.check_output(cmd)
+
         else:
             cmd += [
                 '-out', "{}.csr".format(self.path),
@@ -183,7 +192,7 @@ class SSLAuthority(Authority):
         csr_path = request.destination
         cert_path = request.cert_destination
 
-        with open(pub_key_path, 'w') as stream:
+        with open(csr_path, 'w') as stream:
             stream.write(request.key_data)
 
         cmd = [
@@ -196,21 +205,16 @@ class SSLAuthority(Authority):
             '-CAkey', "{}.key".format(self.path),
             '-CAcreateserial',
             '-out', cert_path,
-            '-%s' % self.key_algorithm,
+            '-extfile', '-',
         ]
 
-        if isinstance(request, (UserSSLRequest, HostSSLRequest)):
-            cmd += [
-                '-extfile', '-',
-            ]
-            ext_string = '\n'.join(
-                "{} = {}".format(k, v) for k, v in request.x509_extensions.items()
-            )
-            subprocess.check_output(cmd, input=ext_string.encode())
-        else:
-            subprocess.check_output(cmd)
+        ext_string = '\n'.join(
+            "{} = {}".format(k, v) for k, v in request.x509_extensions.items()
+        )
 
-        # If it's not a RootCA append the full chain to th output cert
+        subprocess.check_output(cmd, input=ext_string.encode('utf-8'))
+
+        # If it's not a RootCA append the full chain to the output cert
         if not self.isRoot:
             with open(cert_path, 'a') as cert_file:
                 with open("{}.crt".format(self.path), 'r') as ca_cert_file:
