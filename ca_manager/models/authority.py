@@ -48,8 +48,8 @@ class Authority(CustomModel):
             help_text='is root authority?',
             )
 
-    def __bool__(self):
-        return os.path.exists(self.path)
+#    def __bool__(self):
+#        return os.path.exists(self.path)
 
     @property
     def path(self):
