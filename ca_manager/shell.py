@@ -51,7 +51,7 @@ class CAManagerShell(cmd.Cmd):
 
         ca = self.ca_manager.ca[argv[0]]
 
-        if ca:
+        if ca != None:
             ca_description = """
             Certification authority: %s
             --------------------------------------------------

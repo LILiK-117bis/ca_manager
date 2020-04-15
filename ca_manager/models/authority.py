@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from playhouse.gfk import *
-
 from datetime import datetime
 
 import os
@@ -11,6 +9,7 @@ import os.path
 from .customModel import CustomModel
 from .certificate import Certificate
 
+from ..gfk import *
 from ..paths import *
 
 __doc__ = """
@@ -49,8 +48,8 @@ class Authority(CustomModel):
             help_text='is root authority?',
             )
 
-    def __bool__(self):
-        return os.path.exists(self.path)
+#    def __bool__(self):
+#        return os.path.exists(self.path)
 
     @property
     def path(self):
@@ -86,5 +85,5 @@ class Authority(CustomModel):
     def generate_certificate(self, request):
         raise NotImplementedError()
 
-    def __repr__(self):
+    def __str__(self):
         return ('%s %s (%s), created on %s' % (self.__class__.__name__, self.ca_id, self.name, self.creation_date))
